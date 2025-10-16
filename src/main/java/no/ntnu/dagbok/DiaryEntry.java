@@ -1,3 +1,10 @@
 package no.ntnu.dagbok;
 
-public class DiaryEntry {}
+import java.time.LocalDateTime;
+
+public class DiaryEntry {
+  private String author;
+  private String title;
+  private String text;
+  private LocalDateTime date;
+}
