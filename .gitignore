@@ -1,0 +1,14 @@
+# Maven build output
+/target/
+
+# Logs
+*.log
+
+# IntelliJ IDEA
+.idea
+*.iml
+
+# OS-specific
+.DS_Store
+Thumbs.db
+/.idea/
