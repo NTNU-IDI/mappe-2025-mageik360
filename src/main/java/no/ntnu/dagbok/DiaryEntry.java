@@ -12,9 +12,9 @@ public class DiaryEntry {
   /**
    * Constructor for a new DiaryEntry
    *
-   * @param author The author of the diary entry. Non-null.
-   * @param title The title of the diary entry. Non-null.
-   * @param text The text of the diary entry. Non-null.
+   * @param author The author of the diary entry. Non-null. Not blank.
+   * @param title The title of the diary entry. Non-null. Not blank.
+   * @param text The text of the diary entry. Non-null. Not blank.
    * @param dateTime The date and time of the diary entry. Non-null value.
    *
    */
@@ -23,6 +23,17 @@ public class DiaryEntry {
     Objects.requireNonNull(title, "Must have title");
     Objects.requireNonNull(text, "Must have text");
     Objects.requireNonNull(text, "Must have date and time");
+
+    if (author.isBlank()){
+      throw new IllegalArgumentException("Must have author name");
+    }
+    if (title.isBlank()){
+      throw new IllegalArgumentException("Must have diary title");
+    }
+    if (text.isBlank()){
+      throw new IllegalArgumentException("Must have diary text content");
+    }
+
 
     this.author = author;
     this.title = title;
