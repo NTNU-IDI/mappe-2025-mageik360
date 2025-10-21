@@ -1,4 +1,5 @@
 package no.ntnu.dagbok;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import java.time.LocalDateTime;
@@ -84,4 +85,9 @@ public class DiaryEntry {
    */
   public LocalDateTime getDateTime() {return dateTime;}
 
+  @Override
+  public String toString(){
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    return "[" + dateTime.format(formatter) + "] " + "\n" + author + "\n" + title + "\n" + text;
+  }
 }
