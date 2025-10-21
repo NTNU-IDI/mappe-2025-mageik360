@@ -54,11 +54,11 @@ public class DiaryEntry {
   }
 
   /**
-   * setter for title
+   * setter for text
    * @param text non-blank
    */
   public void setText(String text){
-    this.title = validateEmptyInput(text, "text");
+    this.text = validateEmptyInput(text, "text");
   }
 
   // getter methods
