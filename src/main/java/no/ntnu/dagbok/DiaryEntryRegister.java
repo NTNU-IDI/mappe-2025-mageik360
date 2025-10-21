@@ -1,5 +1,6 @@
 package no.ntnu.dagbok;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +57,9 @@ public class DiaryEntryRegister {
    */
   public boolean deleteByDateTime(LocalDateTime dateTime){
     Objects.requireNonNull(dateTime, "Date/Time must be non-null");
-    return entries.removeIf(e -> e.getDateTime().equals(dateTime));
+    LocalDateTime time = dateTime.truncatedTo(ChronoUnit.MINUTES);
+    return entries.removeIf(e -> e.getDateTime()
+        .truncatedTo(ChronoUnit.MINUTES)
+        .equals(time));
   }
 }
