@@ -35,7 +35,7 @@ public class DiaryEntry {
    * @return validated non-empty field
    */
   private static String validateEmptyInput(String value, String field){
-    Objects.requireNonNull(value, field + "cannot be null");
+    Objects.requireNonNull(value, field + " cannot be null");
     String trimmed = value.trim();
     if (trimmed.isEmpty()){
       throw new IllegalArgumentException(field + " cannot be blank");
