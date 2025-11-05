@@ -1,6 +1,8 @@
 package no.ntnu.dagbok;
 
 
+import no.ntnu.dagbok.ui.DiaryUI;
+
 public class Main {
   public static void main(String[] args) {
     DiaryUI diaryUI = new DiaryUI();

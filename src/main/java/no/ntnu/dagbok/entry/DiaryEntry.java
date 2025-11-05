@@ -1,4 +1,4 @@
-package no.ntnu.dagbok;
+package no.ntnu.dagbok.entry;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 

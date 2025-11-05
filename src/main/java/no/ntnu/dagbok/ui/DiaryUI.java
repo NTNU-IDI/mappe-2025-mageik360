@@ -1,11 +1,12 @@
-package no.ntnu.dagbok;
+package no.ntnu.dagbok.ui;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
-import java.time.temporal.ChronoUnit;
+import no.ntnu.dagbok.entry.DiaryEntry;
+import no.ntnu.dagbok.entry.DiaryEntryRegister;
 
 public class DiaryUI {
   private static final int ADD_ENTRY = 1;
