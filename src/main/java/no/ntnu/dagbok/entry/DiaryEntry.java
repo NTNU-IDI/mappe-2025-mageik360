@@ -3,24 +3,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import java.time.LocalDateTime;
+import no.ntnu.dagbok.author.Author;
 
 public class DiaryEntry {
-  private String author;
+  private final Author author;
   private String title;
   private String text;
-  private LocalDateTime dateTime;
+  private final LocalDateTime dateTime;
 
   /**
    * Constructor for a new DiaryEntry
    *
-   * @param author The author of the diary entry. Non-null. Not blank.
+   * @param author The author of the diary entry. Non-null.
    * @param title The title of the diary entry. Non-null. Not blank.
    * @param text The text of the diary entry. Non-null. Not blank.
    * @param dateTime The date and time of the diary entry. Non-null value.
    *
    */
-  public DiaryEntry(String author, String title, String text, LocalDateTime dateTime){
-    this.author = validateEmptyInput(author,"author");
+  public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime){
+    this.author = Objects.requireNonNull(author, "author cannot be null");
     this.title = validateEmptyInput(title,"title");
     this.text = validateEmptyInput(text, "text");
     this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null");
@@ -65,7 +66,7 @@ public class DiaryEntry {
   /** getter for author (immutable field)
    * @return author
    */
-  public String getAuthor() { return author; }
+  public Author getAuthor() { return author; }
 
   /**
    * getter for title (mutable field)
