@@ -1,5 +1,6 @@
 package no.ntnu.dagbok.entry;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ public class DiaryEntryRegister{
     UUID authorId = Objects.requireNonNull(author.getId(), "id of author of entry must not be null");
 
     for (DiaryEntry e : entries) {
-      if (dateTimeTemp.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
+      if (toMinute(e.getDateTime()).equals(dateTimeTemp) && authorId.equals(e.getAuthor().getId())){
         throw new IllegalArgumentException("Duplicated entry in diary registry: Date/Time: "+ dateTimeTemp +" and author ID: "+ authorId);
       }
     }
@@ -51,8 +52,9 @@ public class DiaryEntryRegister{
   public Optional<DiaryEntry> getEntry(LocalDateTime dateTime, UUID authorId){
     Objects.requireNonNull(dateTime, "dateTime must not be null");
     Objects.requireNonNull(authorId, "authorId must not be null");
+    LocalDateTime roundedDateTime = toMinute(dateTime);
     for (DiaryEntry e: entries){
-      if (dateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
+      if (toMinute(e.getDateTime()).equals(roundedDateTime) && authorId.equals(e.getAuthor().getId())){
   return Optional.of(e);
       }
     }
@@ -86,10 +88,11 @@ public class DiaryEntryRegister{
   public boolean removeEntry(LocalDateTime dateTime, UUID authorId){
     Objects.requireNonNull(dateTime, "dateTime must not be null");
     Objects.requireNonNull(authorId, "authorId must not be null");
+    LocalDateTime roundedDateTime = toMinute(dateTime);
     ListIterator<DiaryEntry> iterator = entries.listIterator();
     while (iterator.hasNext()){
       DiaryEntry entry = iterator.next();
-      if (dateTime.equals(entry.getDateTime()) && authorId.equals(entry.getAuthor().getId())){
+      if (toMinute(entry.getDateTime()).equals(roundedDateTime) && authorId.equals(entry.getAuthor().getId())){
         iterator.remove();
         return true;
       }
@@ -121,6 +124,7 @@ public class DiaryEntryRegister{
         output.add(entry);
       }
     }
+    output.sort(ORDER);
     return Collections.unmodifiableList(output);
   }
 
@@ -143,6 +147,10 @@ public class DiaryEntryRegister{
    */
   public void clearDiaryEntryRegister(){
     entries.clear();
+  }
+
+  private static LocalDateTime toMinute(LocalDateTime dateTimeInput){
+    return dateTimeInput.truncatedTo(ChronoUnit.MINUTES);
   }
 
 }

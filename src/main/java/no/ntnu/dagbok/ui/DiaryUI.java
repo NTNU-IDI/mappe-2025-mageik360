@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import no.ntnu.dagbok.author.Author;
+import no.ntnu.dagbok.author.AuthorRegister;
 import no.ntnu.dagbok.entry.DiaryEntry;
 import no.ntnu.dagbok.entry.DiaryEntryRegister;
 
@@ -17,11 +20,18 @@ public class DiaryUI {
 
   private final Scanner scanner = new Scanner(System.in);
   private final DiaryEntryRegister register = new DiaryEntryRegister();
+  private final AuthorRegister authors = new AuthorRegister();
 
   public void init(){
-    register.addDiaryEntry(new DiaryEntry("Lars", "Title 1", "Text 1 Lars", LocalDateTime.now()));
-    register.addDiaryEntry(new DiaryEntry("Lisa", "Title 2", "Text 2 Lisa", LocalDateTime.now().minusDays(3).withHour(12).withMinute(20)));
-    register.addDiaryEntry(new DiaryEntry("Lars", "Title 3", "Text 3 Lars", LocalDateTime.now().minusDays(4).withHour(15).withMinute(22)));
+
+    Author lars = authors.addAuthor("Lars");
+    Author lisa = authors.addAuthor("Lisa");
+    DiaryEntry larsEntry1 = new DiaryEntry(lars,"Title 1", "Text 1 Lars", LocalDateTime.now());
+    DiaryEntry lisaEntry1 = new DiaryEntry(lisa,"Title 2", "Text 2 Lisa", LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
+    DiaryEntry larsEntry2 = new DiaryEntry(lars, "Title 3", "Text 3 Lars", LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
+    register.addEntry(larsEntry1);
+    register.addEntry(lisaEntry1);
+    register.addEntry(larsEntry2);
   }
 
   public void start(){
@@ -64,18 +74,24 @@ public class DiaryUI {
       System.out.println("Dummy add entry");
   }
   private void listAll(){
-    list(register.getAllEntries());
+    list(register.getAll());
   }
   private void searchByDate(){
     LocalDate date = readDate("Date (yyyy-MM-dd):");
-    List<DiaryEntry> found = register.findFromDate(date);
+    List<DiaryEntry> found = register.findByDate(date);
     if (found.isEmpty()) System.out.println("No diary entries from this date");
     else list(found);
   }
   private void deleteEntry(){
     LocalDateTime ldt = readDateTime("Time of entry (yyyy-MM-dd HH:mm): ");
-    boolean deleted = register.deleteByDateTime(ldt);
-    System.out.println(deleted ? "Deleted" : "Could not find diary entry");
+    String authorName = readLine("Author's name: ");
+    Optional<Author> author = authors.findByName(authorName);
+    if (author.isEmpty()){
+      System.out.println("Author not found");
+      return;
+    }
+    boolean authorDeleted = register.removeEntry(ldt,author.get().getId());
+    System.out.println(authorDeleted ? "Deleted" : "Could not find diary entry");
   }
 
   /**
