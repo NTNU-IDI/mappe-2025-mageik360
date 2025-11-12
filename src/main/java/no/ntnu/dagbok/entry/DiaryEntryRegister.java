@@ -81,6 +81,32 @@ public class DiaryEntryRegister{
   }
 
   /**
+   * Returns a list of entries made between two dates
+   * Made with help from chatGPT
+   * @param fromInclusive
+   * @param toExclusive
+   * @return
+   */
+  public List<DiaryEntry> findBetween(LocalDateTime fromInclusive, LocalDateTime toExclusive){
+    Objects.requireNonNull(fromInclusive, "Time from must not be null");
+    Objects.requireNonNull(toExclusive, "Time to must not be null");
+    LocalDateTime from = toMinute(fromInclusive);
+    LocalDateTime to = toMinute(toExclusive);
+    if (!from.isBefore(to)){
+      throw new IllegalArgumentException("From time must be before after time");
+    }
+    List<DiaryEntry> out = new ArrayList<>();
+    for (DiaryEntry entry : entries){
+      LocalDateTime dateTime = entry.getDateTime();
+      if ((dateTime.equals(from) || dateTime.isAfter(from)) && dateTime.isBefore(to)){
+        out.add(entry);
+      }
+    }
+    out.sort(ORDER);
+    return Collections.unmodifiableList(out);
+  }
+
+  /**
    * Removes entry by exact dateTime and authorId
    * @param dateTime
    * @param authorId
