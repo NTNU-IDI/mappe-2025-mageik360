@@ -32,6 +32,19 @@ public class AuthorRegister {
   }
 
   /**
+   * Getter for all authors
+   * Comparator provided by ChatGPT
+   * @return List of all authors
+   */
+  public List<Author> getAll(){
+    List<Author> list = new ArrayList<>(idMap.values());
+    list.sort(Comparator
+        .comparing((Author a) -> Author.normalizedKey(a.getDisplayName()))
+        .thenComparing(Author::getId));
+    return Collections.unmodifiableList(list);
+  }
+
+  /**
    * Finds author by name
    * Optional return value suggested by ChatGPT
    * @param displayName name of author to be found
