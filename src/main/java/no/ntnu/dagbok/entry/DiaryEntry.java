@@ -11,6 +11,8 @@ public class DiaryEntry {
   private String title;
   private String text;
   private final LocalDateTime dateTime;
+  public static final int TITLE_MAX_LENGTH = 200;
+  public static final int TEXT_MAX_LENGTH = 10_000;
 
   /**
    * Constructor for a new DiaryEntry
@@ -23,8 +25,8 @@ public class DiaryEntry {
    */
   public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime){
     this.author = Objects.requireNonNull(author, "author cannot be null");
-    this.title = validateEmptyInput(title,"title");
-    this.text = validateEmptyInput(text, "text");
+    this.title = validateEmptyInput(title,"title", TITLE_MAX_LENGTH);
+    this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
     this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null").truncatedTo(
         ChronoUnit.MINUTES);
 
@@ -37,11 +39,14 @@ public class DiaryEntry {
    * @param field name of field used in message
    * @return validated non-empty field
    */
-  private static String validateEmptyInput(String value, String field){
+  private static String validateEmptyInput(String value, String field, int max){
     Objects.requireNonNull(value, field + " cannot be null");
     String trimmed = value.trim();
     if (trimmed.isEmpty()){
       throw new IllegalArgumentException(field + " cannot be blank");
+    }
+    if (trimmed.length() > max){
+      throw new IllegalArgumentException(field + " must be shorter than " + max);
     }
     return trimmed;
   }
@@ -53,7 +58,7 @@ public class DiaryEntry {
    * @param title non-blank
    */
   public void setTitle(String title){
-    this.title = validateEmptyInput(title, "title");
+    this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
   }
 
   /**
@@ -61,7 +66,7 @@ public class DiaryEntry {
    * @param text non-blank
    */
   public void setText(String text){
-    this.text = validateEmptyInput(text, "text");
+    this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
   }
 
   // getter methods
