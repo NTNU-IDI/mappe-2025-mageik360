@@ -1,41 +1,38 @@
 package no.ntnu.dagbok.entry;
 import java.time.LocalDateTime;
+import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class DiaryEntryTest {
   @Test void constructor_acceptsValidValues(){
+    Author a = new Author("Lars");
     LocalDateTime dateTime = LocalDateTime.of(2025,12,12,12,12);
-    DiaryEntry diaryEntry = new DiaryEntry("Lars","Title", "Text", dateTime);
+    DiaryEntry diaryEntry = new DiaryEntry(a,"Title", "Text", dateTime);
 
-    assertEquals("Lars", diaryEntry.getAuthor());
+    assertEquals(a, diaryEntry.getAuthor());
     assertEquals("Title", diaryEntry.getTitle());
     assertEquals("Text", diaryEntry.getText());
     assertEquals(dateTime,diaryEntry.getDateTime());
   }
 
   @Test
-  void constructor_rejectsNulls(){
-    LocalDateTime dateTime = LocalDateTime.now();
+  void constructor_rejectsInvalidValues(){
+    Author a = new Author("Lisa");
+    LocalDateTime dateTime = LocalDateTime.of(2025,1,1,10,0);
     assertThrows(NullPointerException.class, () -> new DiaryEntry(null,"title", "text", dateTime));
-    assertThrows(NullPointerException.class, () -> new DiaryEntry("name",null, "text", dateTime));
-    assertThrows(NullPointerException.class, () -> new DiaryEntry("name","title", null, dateTime));
-    assertThrows(NullPointerException.class, () -> new DiaryEntry("name","title", "text", null));
+    assertThrows(NullPointerException.class, () -> new DiaryEntry(a,null, "text", dateTime));
+    assertThrows(NullPointerException.class, () -> new DiaryEntry(a,"title", null, dateTime));
+    assertThrows(NullPointerException.class, () -> new DiaryEntry(a,"title", "text", null));
+    assertThrows(IllegalArgumentException.class, () -> new DiaryEntry(a," ", "text", dateTime));
+    assertThrows(IllegalArgumentException.class, () -> new DiaryEntry(a,"title", " ", dateTime));
   }
 
   @Test
-  void constructor_rejectsEmptyStrings(){
-    LocalDateTime dateTime = LocalDateTime.now();
-    assertThrows(IllegalArgumentException.class, () -> new DiaryEntry(" ","title", "text", dateTime));
-    assertThrows(IllegalArgumentException.class, () -> new DiaryEntry("name"," ", "text", dateTime));
-    assertThrows(IllegalArgumentException.class, () -> new DiaryEntry("name","title", " ", dateTime));
-  }
-
-  @Test
-  void setterMethods_validateAndUpdate(){
-    DiaryEntry diaryEntry = new DiaryEntry("Name", "Title", "Test", LocalDateTime.now());
+  void setters_trim_and_validate(){
+    DiaryEntry diaryEntry = new DiaryEntry(new Author("Linda"), "Title","Text", LocalDateTime.now());
     diaryEntry.setTitle("  New Title  ");
     diaryEntry.setText("  New Text  ");
 
