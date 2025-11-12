@@ -45,4 +45,42 @@ class DiaryEntryTest {
     assertThrows(NullPointerException.class, () -> diaryEntry.setText(null));
 
   }
+  private static String repeat(char c, int n){
+    return String.valueOf(c).repeat(Math.max(0,n));
+  }
+  @Test
+  void constructor_accepts_exact_max_lengths(){
+    Author a = new Author("Lars");
+    String title = repeat('A', DiaryEntry.TITLE_MAX_LENGTH);
+    String text = repeat('B', DiaryEntry.TEXT_MAX_LENGTH);
+    DiaryEntry e = new DiaryEntry(a, title,text,LocalDateTime.of(2025,1,1,10,10));
+    assertEquals(title,e.getTitle());
+    assertEquals(text,e.getText());
+  }
+
+  @Test
+  void constructor_reject_over_max_lengths(){
+    Author a = new Author("Hanna");
+    String tooLongTitle = repeat('A', DiaryEntry.TITLE_MAX_LENGTH+1);
+    String okText = "Text";
+    assertThrows(IllegalArgumentException.class,()-> new DiaryEntry(a,tooLongTitle,okText,LocalDateTime.of(2025,1,1,10,10)));
+    String okTitle = "Title";
+    String tooLongText = repeat('A', DiaryEntry.TEXT_MAX_LENGTH +1);
+    assertThrows(IllegalArgumentException.class,()-> new DiaryEntry(a,okTitle,tooLongText,LocalDateTime.of(2025,1,1,10,10)));
+
+  }
+  @Test
+  void setters_enforce_limits_and_trimming(){
+    DiaryEntry e = new DiaryEntry(new Author("Leonora"),"Title", "Text", LocalDateTime.of(2025,1,1,10,0));
+    e.setTitle("  Title  ");
+    e.setText("  Text  ");
+    assertEquals("Title",e.getTitle());
+    assertEquals("Text",e.getText());
+
+    String tooLongTitle = repeat('A', DiaryEntry.TITLE_MAX_LENGTH +1);
+    String tooLongText = repeat('B', DiaryEntry.TEXT_MAX_LENGTH +1);
+
+    assertThrows(IllegalArgumentException.class, () -> e.setTitle(tooLongTitle));
+    assertThrows(IllegalArgumentException.class, () -> e.setText(tooLongText));
+  }
 }
