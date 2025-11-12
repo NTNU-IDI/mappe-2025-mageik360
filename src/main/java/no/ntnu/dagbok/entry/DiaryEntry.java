@@ -1,5 +1,6 @@
 package no.ntnu.dagbok.entry;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,8 @@ public class DiaryEntry {
     this.author = Objects.requireNonNull(author, "author cannot be null");
     this.title = validateEmptyInput(title,"title");
     this.text = validateEmptyInput(text, "text");
-    this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null");
+    this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null").truncatedTo(
+        ChronoUnit.MINUTES);
 
   }
 
