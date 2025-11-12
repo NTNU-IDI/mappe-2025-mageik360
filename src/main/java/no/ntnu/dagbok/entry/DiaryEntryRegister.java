@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import no.ntnu.dagbok.author.Author;
+import java.time.temporal.ChronoUnit;
 
 
 /**
@@ -31,7 +32,7 @@ public class DiaryEntryRegister{
    */
   public void addEntry(DiaryEntry entry){
     Objects.requireNonNull(entry, "entry must not be null");
-    LocalDateTime dateTimeTemp = Objects.requireNonNull(entry.getDateTime(), "dateTime of entry must not be null");
+    LocalDateTime dateTimeTemp = toMinute(Objects.requireNonNull(entry.getDateTime(), "dateTime of entry must not be null"));
     Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
     UUID authorId = Objects.requireNonNull(author.getId(), "id of author of entry must not be null");
 
@@ -54,7 +55,7 @@ public class DiaryEntryRegister{
     Objects.requireNonNull(authorId, "authorId must not be null");
     LocalDateTime roundedDateTime = toMinute(dateTime);
     for (DiaryEntry e: entries){
-      if (toMinute(e.getDateTime()).equals(roundedDateTime) && authorId.equals(e.getAuthor().getId())){
+      if (roundedDateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
   return Optional.of(e);
       }
     }
@@ -92,7 +93,8 @@ public class DiaryEntryRegister{
     ListIterator<DiaryEntry> iterator = entries.listIterator();
     while (iterator.hasNext()){
       DiaryEntry entry = iterator.next();
-      if (toMinute(entry.getDateTime()).equals(roundedDateTime) && authorId.equals(entry.getAuthor().getId())){
+      if (roundedDateTime.equals(entry.getDateTime())
+          && authorId.equals(entry.getAuthor().getId())) {
         iterator.remove();
         return true;
       }
