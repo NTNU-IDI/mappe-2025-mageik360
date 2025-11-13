@@ -59,15 +59,7 @@ public class DiaryUI {
     System.out.println("3. Search by date");
     System.out.println("4. Delete diary entry");
     System.out.println("0. Exit program");
-
-    if (scanner.hasNext()){
-      int value = scanner.nextInt();
-      scanner.nextLine();
-      return value;
-    } else {
-      scanner.nextLine();
-      return 0;
-    }
+    return readInt("Pick option");
   }
 
   private void addEntry(){
