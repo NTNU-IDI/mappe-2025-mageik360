@@ -1,0 +1,61 @@
+package no.ntnu.dagbok.entry;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import no.ntnu.dagbok.author.Author;
+import org.junit.jupiter.api.Test;
+
+public class DiaryEntryRegisterFindBetweenTest {
+
+  @Test
+  void returns_entries_in_half_open_interval_sorted_and_unmodifiable(){
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    Author a = new Author("Lars");
+    Author b = new Author("Linda");
+
+    LocalDateTime t0900 = LocalDateTime.of(2025,11,8,9,0,30);
+    LocalDateTime t0930 = LocalDateTime.of(2025,11,8,9,30,5);
+    LocalDateTime t1000 = LocalDateTime.of(2025,11,8,10,0,0);
+    LocalDateTime t1030 = LocalDateTime.of(2025,11,8,10,30,59);
+
+    reg.addEntry(new DiaryEntry(a,"A2","a",t0930));
+    reg.addEntry(new DiaryEntry(b,"B1","a",t1000));
+    reg.addEntry(new DiaryEntry(a,"A1","a",t0900));
+    reg.addEntry(new DiaryEntry(b,"B2","a",t1030));
+
+    LocalDateTime from = LocalDateTime.of(2025,11,8,9,30);
+    LocalDateTime to = LocalDateTime.of(2025,11,8,10,30);
+
+    List<DiaryEntry> result = reg.findBetween(from,to);
+    assertEquals(2,result.size());
+
+    assertTrue(!result.get(0).getDateTime().isAfter(result.get(1).getDateTime()));
+
+    assertThrows(UnsupportedOperationException.class, () -> result.add(result.getFirst()));
+  }
+  @Test
+  void throws_if_from_not_before_to(){
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    LocalDateTime t = LocalDateTime.of(2025,11,8,9,0);
+    assertThrows(IllegalArgumentException.class, ()-> reg.findBetween(t, t));
+    assertThrows(IllegalArgumentException.class, ()-> reg.findBetween(t.plusMinutes(1),t));
+
+  }
+
+  @Test
+  void respects_minute_precision_on_bound(){
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    Author a = new Author("Karoline");
+    reg.addEntry(new DiaryEntry(a, "A","a", LocalDateTime.of(2025,11,8,9,0,45)));
+    List<DiaryEntry> result = reg.findBetween(
+      LocalDateTime.of(2025,11,8,9,0,10),
+      LocalDateTime.of(2025,11,8,9,1,50)
+    );
+    assertEquals(1,result.size());
+    assertEquals(LocalDateTime.of(2025,11,8,9,0), result.getFirst().getDateTime());
+  }
+}
