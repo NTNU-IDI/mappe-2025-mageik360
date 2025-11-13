@@ -18,6 +18,12 @@ public class DiaryUI {
   private static final int DELETE_ENTRY = 4;
   private static final int EXIT_PROGRAM = 0;
 
+  private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
+  private static final String PATTERN_DATE = "yyyy-MM-dd";
+
+  private static final DateTimeFormatter DF_MINUTE = DateTimeFormatter.ofPattern(PATTERN_MINUTE);
+  private static final DateTimeFormatter DF_DATE = DateTimeFormatter.ofPattern(PATTERN_DATE);
+
   private final Scanner scanner = new Scanner(System.in);
   private final DiaryEntryRegister register = new DiaryEntryRegister();
   private final AuthorRegister authors = new AuthorRegister();
@@ -63,25 +69,51 @@ public class DiaryUI {
   }
 
   private void addEntry(){
-      System.out.println("Dummy add entry");
+    try {
+    String authorName = readLine("Author name: ");
+    Author author = authors.findByName(authorName).orElse(null);
+    if (author == null) {
+      boolean create = readYesNo("Author not found. Add " + authorName + " as author? (y/n): ");
+      if (!create){
+        System.out.println("Operation cancelled");
+        return;
+      }
+      author = authors.addAuthor(authorName);
+    }
+    String title = readLine("Title: ");
+    String text = readLine("Text: ");
+    LocalDateTime dateTime = readDateTime("Date/Time (" + PATTERN_MINUTE + "): ");
+    DiaryEntry inputEntry = new DiaryEntry(author,title,text,dateTime);
+    register.addEntry(inputEntry);
+    System.out.println("Entry added");}
+    catch (RuntimeException e) {
+      System.out.println("Could not add diary entry: " +e.getMessage());
+    }
   }
+
   private void listAll(){
     list(register.getAll());
   }
   private void searchByDate(){
-    LocalDate date = readDate("Date (yyyy-MM-dd):");
+    LocalDate date = readDate("Date ("+ PATTERN_DATE +"):");
     List<DiaryEntry> found = register.findByDate(date);
     if (found.isEmpty()) System.out.println("No diary entries from this date");
     else list(found);
   }
   private void deleteEntry(){
-    LocalDateTime ldt = readDateTime("Time of entry (yyyy-MM-dd HH:mm): ");
+    LocalDateTime ldt = readDateTime("Time of entry (" + PATTERN_MINUTE + "): ");
     String authorName = readLine("Author's name: ");
     Optional<Author> author = authors.findByName(authorName);
     if (author.isEmpty()){
       System.out.println("Author not found");
       return;
     }
+    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by ");
+    if (!readYesNo("Are you certain? (y/n): ")){
+      System.out.println("Cancelled");
+      return;
+    }
+
     boolean authorDeleted = register.removeEntry(ldt,author.get().getId());
     System.out.println(authorDeleted ? "Deleted" : "Could not find diary entry");
   }
@@ -125,28 +157,36 @@ public class DiaryUI {
     }
     }
   private LocalDate readDate(String input){
-    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     while (true){
-      System.out.println(input);
+      System.out.print(input);
       String s = scanner.nextLine().trim();
       try {
-        return LocalDate.parse(s, df);
-      } catch (Exception e) {
-        System.out.println("Invalid format. Try this: yyyy-MM-dd");
+        return LocalDate.parse(s,DF_DATE);
+      } catch (Exception e){
+        System.out.println("Invalid date format. Use " + DF_DATE);
       }
     }
   }
 
   private LocalDateTime readDateTime(String input){
-    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     while (true){
-      System.out.println(input);
+      System.out.print(input);
       String s = scanner.nextLine().trim();
       try {
-        return LocalDateTime.parse(s, df);
-      } catch (Exception e) {
-        System.out.println("Invalid format. Try this: yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(s, DF_MINUTE);
+      } catch (Exception e){
+        System.out.println("Invalid format. Use "+ DF_MINUTE);
       }
+    }
+  }
+
+  private boolean readYesNo(String input){
+    while (true){
+      System.out.print(input);
+      String s = scanner.nextLine().trim().toLowerCase();
+      if (s.equals("y")) return true;
+      if (s.equals("n")) return false;
+      System.out.println("Type y/n for yes or no");
     }
   }
 
