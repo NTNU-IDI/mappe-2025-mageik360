@@ -11,6 +11,25 @@ import no.ntnu.dagbok.author.AuthorRegister;
 import no.ntnu.dagbok.entry.DiaryEntry;
 import no.ntnu.dagbok.entry.DiaryEntryRegister;
 
+/**
+ * Console-based user interface for diary application.
+ *
+ * <p> Responsibilities:
+ * <ul>
+ * <li>Prompt the user for interaction and parse input.</li>
+ * <li>Handle input robustly without throwing errors for bad input.</li>
+ * <li>Delegates actual operations to {@link no.ntnu.dagbok.entry.DiaryEntryRegister} and {@link no.ntnu.dagbok.author.AuthorRegister}.</li>
+ * </ul>
+ * </p>
+ * <p> Conventions:
+ * <ul>
+ *   <li>Date/Time precision is in minutes. All time related prompts are in the pattern {@code yyyy-MM-dd HH:mm}.</li>
+ *   <li>Lists are sorted by ascending date/time, then ascending author id. Lists are read-only.</li>
+ *   <li>Author id and date/time identify unique entries for search/editing/deletion.</li>
+ * </ul>
+ *
+ * </p>
+ */
 public class DiaryUI {
   private static final int ADD_ENTRY = 1;
   private static final int LIST_ALL = 2;
@@ -30,6 +49,9 @@ public class DiaryUI {
   private final DiaryEntryRegister register = new DiaryEntryRegister();
   private final AuthorRegister authors = new AuthorRegister();
 
+  /**
+   * Seeds demo author and entries on starting the program.
+   */
   public void init(){
 
     Author lars = authors.addAuthor("Lars");
@@ -42,6 +64,10 @@ public class DiaryUI {
     register.addEntry(larsEntry2);
   }
 
+  /**
+   * Run the main menu loop until user exits.
+   * Doesn't throw due to invalid input. Instead, ask for new input.
+   */
   public void start(){
     boolean finished = false;
     while (!finished) {
