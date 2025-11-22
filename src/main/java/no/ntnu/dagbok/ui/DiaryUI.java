@@ -16,6 +16,7 @@ public class DiaryUI {
   private static final int LIST_ALL = 2;
   private static final int SEARCH_BY_DATE = 3;
   private static final int DELETE_ENTRY = 4;
+  private static final int LIST_BY_AUTHOR = 5;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -49,6 +50,7 @@ public class DiaryUI {
         case LIST_ALL -> listAll();
         case SEARCH_BY_DATE -> searchByDate();
         case DELETE_ENTRY -> deleteEntry();
+        case LIST_BY_AUTHOR -> listByAuthor();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -64,6 +66,7 @@ public class DiaryUI {
     System.out.println("2. List all entries ");
     System.out.println("3. Search by date");
     System.out.println("4. Delete diary entry");
+    System.out.println("5. List entries by author");
     System.out.println("0. Exit program");
     return readInt("Pick option");
   }
@@ -94,6 +97,20 @@ public class DiaryUI {
   private void listAll(){
     list(register.getAll());
   }
+
+  /**
+   * Method to show a list of entries from a given author
+   */
+  private void listByAuthor(){
+    String authorName = readLine("Author's name: ");
+    Optional<Author> a = authors.findByName(authorName);
+    if (a.isEmpty()){
+      System.out.println("No author found by that name.");
+      return;
+    }
+    list(register.findByAuthor(a.get().getId()));
+  }
+
   private void searchByDate(){
     LocalDate date = readDate("Date ("+ PATTERN_DATE +"):");
     List<DiaryEntry> found = register.findByDate(date);
