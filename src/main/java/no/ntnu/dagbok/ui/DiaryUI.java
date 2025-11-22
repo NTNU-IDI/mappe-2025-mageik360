@@ -11,11 +11,32 @@ import no.ntnu.dagbok.author.AuthorRegister;
 import no.ntnu.dagbok.entry.DiaryEntry;
 import no.ntnu.dagbok.entry.DiaryEntryRegister;
 
+/**
+ * Console-based user interface for diary application.
+ *
+ * <p> Responsibilities:
+ * <ul>
+ * <li>Prompt the user for interaction and parse input.</li>
+ * <li>Handle input robustly without throwing errors for bad input.</li>
+ * <li>Delegates actual operations to {@link no.ntnu.dagbok.entry.DiaryEntryRegister} and {@link no.ntnu.dagbok.author.AuthorRegister}.</li>
+ * </ul>
+ * </p>
+ * <p> Conventions:
+ * <ul>
+ *   <li>Date/Time precision is in minutes. All time related prompts are in the pattern {@code yyyy-MM-dd HH:mm}.</li>
+ *   <li>Lists are sorted by ascending date/time, then ascending author id. Lists are read-only.</li>
+ *   <li>Author id and date/time identify unique entries for search/editing/deletion.</li>
+ * </ul>
+ *
+ * </p>
+ */
 public class DiaryUI {
   private static final int ADD_ENTRY = 1;
   private static final int LIST_ALL = 2;
   private static final int SEARCH_BY_DATE = 3;
   private static final int DELETE_ENTRY = 4;
+  private static final int LIST_BY_AUTHOR = 5;
+  private static final int EDIT_ENTRY = 6;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -28,6 +49,9 @@ public class DiaryUI {
   private final DiaryEntryRegister register = new DiaryEntryRegister();
   private final AuthorRegister authors = new AuthorRegister();
 
+  /**
+   * Seeds demo author and entries on starting the program.
+   */
   public void init(){
 
     Author lars = authors.addAuthor("Lars");
@@ -40,6 +64,10 @@ public class DiaryUI {
     register.addEntry(larsEntry2);
   }
 
+  /**
+   * Run the main menu loop until user exits.
+   * Doesn't throw due to invalid input. Instead, ask for new input.
+   */
   public void start(){
     boolean finished = false;
     while (!finished) {
@@ -49,6 +77,8 @@ public class DiaryUI {
         case LIST_ALL -> listAll();
         case SEARCH_BY_DATE -> searchByDate();
         case DELETE_ENTRY -> deleteEntry();
+        case LIST_BY_AUTHOR -> listByAuthor();
+        case EDIT_ENTRY -> editEntry();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -58,16 +88,28 @@ public class DiaryUI {
     }
   }
 
+  /**
+   * Displays the menu options in the console.
+   * @return readInt
+   */
   private int displayMenu(){
     System.out.println("--- Diary-Software ---");
     System.out.println("1. Add diary entry");
     System.out.println("2. List all entries ");
     System.out.println("3. Search by date");
     System.out.println("4. Delete diary entry");
+    System.out.println("5. List entries by author");
+    System.out.println("6. Edit diary entry (title/text)");
     System.out.println("0. Exit program");
     return readInt("Pick option");
   }
 
+  /**
+   * Prompts for author, title, text, and date/time (yyyy-MM-dd HH:mm), then add the entry.
+   * Creates the author if not found in register (asks for confirmation).
+   * Uses minute-level time precision.
+   * On invalid data or duplicate (identical author and time), prints errror and returns without throwing error.
+   */
   private void addEntry(){
     try {
     String authorName = readLine("Author name: ");
@@ -91,9 +133,54 @@ public class DiaryUI {
     }
   }
 
+  /**
+   * Method to edit existing diary entries
+   */
+  private void editEntry(){
+    LocalDateTime when = readDateTime("Entry date/time" + PATTERN_MINUTE);
+    String authorName = readLine("Author's name: ");
+    Optional<Author> author = authors.findByName(authorName);
+    if (author.isEmpty()){
+      System.out.println("No author found by that name.");
+      return;
+    }
+    var option = register.getEntry(when, author.get().getId());
+    if (option.isEmpty()){
+      System.out.println("Entry not found.");
+      return;
+    }
+    DiaryEntry e = option.get();
+    System.out.println("Current title and text:");
+    showEntry(e);
+
+    String newTitle = readLine("New title:");
+    String newText = readLine("New text: ");
+    try {
+      if (!newTitle.isBlank()) e.setTitle(newTitle);
+      if (!newText.isBlank()) e.setText(newText);
+      System.out.println("Diary entry updated");
+    } catch (RuntimeException ex){
+      System.out.println("Could not update entry " + ex.getMessage());
+    }
+  }
+
   private void listAll(){
     list(register.getAll());
   }
+
+  /**
+   * Method to show a list of entries from a given author
+   */
+  private void listByAuthor(){
+    String authorName = readLine("Author's name: ");
+    Optional<Author> a = authors.findByName(authorName);
+    if (a.isEmpty()){
+      System.out.println("No author found by that name.");
+      return;
+    }
+    list(register.findByAuthor(a.get().getId()));
+  }
+
   private void searchByDate(){
     LocalDate date = readDate("Date ("+ PATTERN_DATE +"):");
     List<DiaryEntry> found = register.findByDate(date);
@@ -108,7 +195,7 @@ public class DiaryUI {
       System.out.println("Author not found");
       return;
     }
-    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by ");
+    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by " + author.get().getDisplayName() + "?");
     if (!readYesNo("Are you certain? (y/n): ")){
       System.out.println("Cancelled");
       return;
@@ -129,9 +216,20 @@ public class DiaryUI {
       return;
     }
     entries.forEach(e -> {
-      System.out.println(e);
+      showEntry(e);
       System.out.println();
     });
+  }
+
+  /**
+   * Helper method for rendering entries
+   * @param entry The entry to be shown
+   */
+  private void showEntry(DiaryEntry entry){
+    String timeStamp = DF_MINUTE.format(entry.getDateTime());
+    System.out.println("[" + timeStamp + "]" + entry.getAuthor().getDisplayName());
+    System.out.println(entry.getTitle());
+    System.out.println(entry.getText());
   }
 
   // Input helper methods
