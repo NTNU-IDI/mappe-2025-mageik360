@@ -88,6 +88,10 @@ public class DiaryUI {
     }
   }
 
+  /**
+   * Displays the menu options in the console.
+   * @return readInt
+   */
   private int displayMenu(){
     System.out.println("--- Diary-Software ---");
     System.out.println("1. Add diary entry");
@@ -100,6 +104,12 @@ public class DiaryUI {
     return readInt("Pick option");
   }
 
+  /**
+   * Prompts for author, title, text, and date/time (yyyy-MM-dd HH:mm), then add the entry.
+   * Creates the author if not found in register (asks for confirmation).
+   * Uses minute-level time precision.
+   * On invalid data or duplicate (identical author and time), prints errror and returns without throwing error.
+   */
   private void addEntry(){
     try {
     String authorName = readLine("Author name: ");
