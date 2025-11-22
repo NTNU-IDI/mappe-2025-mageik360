@@ -108,7 +108,7 @@ public class DiaryUI {
       System.out.println("Author not found");
       return;
     }
-    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by ");
+    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by " + author.get().getDisplayName() + "?");
     if (!readYesNo("Are you certain? (y/n): ")){
       System.out.println("Cancelled");
       return;
@@ -129,9 +129,20 @@ public class DiaryUI {
       return;
     }
     entries.forEach(e -> {
-      System.out.println(e);
+      showEntry(e);
       System.out.println();
     });
+  }
+
+  /**
+   * Helper method for rendering entries
+   * @param entry The entry to be shown
+   */
+  private void showEntry(DiaryEntry entry){
+    String timeStamp = DF_MINUTE.format(entry.getDateTime());
+    System.out.println("[" + timeStamp + "]" + entry.getAuthor().getDisplayName());
+    System.out.println(entry.getTitle());
+    System.out.println(entry.getText());
   }
 
   // Input helper methods
