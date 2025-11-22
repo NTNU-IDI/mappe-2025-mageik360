@@ -17,6 +17,7 @@ public class DiaryUI {
   private static final int SEARCH_BY_DATE = 3;
   private static final int DELETE_ENTRY = 4;
   private static final int LIST_BY_AUTHOR = 5;
+  private static final int EDIT_ENTRY = 6;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -51,6 +52,7 @@ public class DiaryUI {
         case SEARCH_BY_DATE -> searchByDate();
         case DELETE_ENTRY -> deleteEntry();
         case LIST_BY_AUTHOR -> listByAuthor();
+        case EDIT_ENTRY -> editEntry();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -67,6 +69,7 @@ public class DiaryUI {
     System.out.println("3. Search by date");
     System.out.println("4. Delete diary entry");
     System.out.println("5. List entries by author");
+    System.out.println("6. Edit diary entry (title/text)");
     System.out.println("0. Exit program");
     return readInt("Pick option");
   }
@@ -91,6 +94,37 @@ public class DiaryUI {
     System.out.println("Entry added");}
     catch (RuntimeException e) {
       System.out.println("Could not add diary entry: " +e.getMessage());
+    }
+  }
+
+  /**
+   * Method to edit existing diary entries
+   */
+  private void editEntry(){
+    LocalDateTime when = readDateTime("Entry date/time" + PATTERN_MINUTE);
+    String authorName = readLine("Author's name: ");
+    Optional<Author> author = authors.findByName(authorName);
+    if (author.isEmpty()){
+      System.out.println("No author found by that name.");
+      return;
+    }
+    var option = register.getEntry(when, author.get().getId());
+    if (option.isEmpty()){
+      System.out.println("Entry not found.");
+      return;
+    }
+    DiaryEntry e = option.get();
+    System.out.println("Current title and text:");
+    showEntry(e);
+
+    String newTitle = readLine("New title:");
+    String newText = readLine("New text: ");
+    try {
+      if (!newTitle.isBlank()) e.setTitle(newTitle);
+      if (!newText.isBlank()) e.setText(newText);
+      System.out.println("Diary entry updated");
+    } catch (RuntimeException ex){
+      System.out.println("Could not update entry " + ex.getMessage());
     }
   }
 
