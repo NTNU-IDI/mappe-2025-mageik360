@@ -37,6 +37,7 @@ public class DiaryUI {
   private static final int DELETE_ENTRY = 4;
   private static final int LIST_BY_AUTHOR = 5;
   private static final int EDIT_ENTRY = 6;
+  private static final int TODAY_ENTRIES = 7;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -79,6 +80,7 @@ public class DiaryUI {
         case DELETE_ENTRY -> deleteEntry();
         case LIST_BY_AUTHOR -> listByAuthor();
         case EDIT_ENTRY -> editEntry();
+        case TODAY_ENTRIES -> todayEntries();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -100,6 +102,7 @@ public class DiaryUI {
     System.out.println("4. Delete diary entry");
     System.out.println("5. List entries by author");
     System.out.println("6. Edit diary entry (title/text)");
+    System.out.println("7. Show today's diary entries");
     System.out.println("0. Exit program");
     return readInt("Pick option");
   }
@@ -164,12 +167,22 @@ public class DiaryUI {
     }
   }
 
+  /**
+   * Method to show a list of diary entries made today.
+   */
+  private void todayEntries(){
+    list(register.findByDate(LocalDate.now()));
+  }
+
+  /**
+   * Method to show a list of all diary entries.
+   */
   private void listAll(){
     list(register.getAll());
   }
 
   /**
-   * Method to show a list of entries from a given author
+   * Method to show a list of entries from a given author.
    */
   private void listByAuthor(){
     String authorName = readLine("Author's name: ");
@@ -181,12 +194,19 @@ public class DiaryUI {
     list(register.findByAuthor(a.get().getId()));
   }
 
+  /**
+   * Method to show a list of all entries from a given date.
+   */
   private void searchByDate(){
     LocalDate date = readDate("Date ("+ PATTERN_DATE +"):");
     List<DiaryEntry> found = register.findByDate(date);
     if (found.isEmpty()) System.out.println("No diary entries from this date");
     else list(found);
   }
+
+  /**
+   * Method to show
+   */
   private void deleteEntry(){
     LocalDateTime ldt = readDateTime("Time of entry (" + PATTERN_MINUTE + "): ");
     String authorName = readLine("Author's name: ");
