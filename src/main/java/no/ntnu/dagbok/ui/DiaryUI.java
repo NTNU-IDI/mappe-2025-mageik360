@@ -247,7 +247,7 @@ public class DiaryUI {
    */
   private void showEntry(DiaryEntry entry){
     String timeStamp = DF_MINUTE.format(entry.getDateTime());
-    System.out.println("[" + timeStamp + "]" + entry.getAuthor().getDisplayName());
+    System.out.println("[" + timeStamp + "] " + entry.getAuthor().getDisplayName());
     System.out.println(entry.getTitle());
     System.out.println(entry.getText());
   }
