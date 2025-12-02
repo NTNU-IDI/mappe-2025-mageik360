@@ -32,15 +32,11 @@ public class DiaryEntryRegister{
    */
   public void addEntry(DiaryEntry entry){
     Objects.requireNonNull(entry, "entry must not be null");
-    LocalDateTime dateTimeTemp = toMinute(Objects.requireNonNull(entry.getDateTime(), "dateTime of entry must not be null"));
+    //LocalDateTime dateTimeTemp = Objects.requireNonNull(entry.getDateTime(), "dateTime of entry must not be null");
     Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
-    UUID authorId = Objects.requireNonNull(author.getId(), "id of author of entry must not be null");
+    //UUID authorId = Objects.requireNonNull(author.getId(), "id of author of entry must not be null");
 
-    for (DiaryEntry e : entries) {
-      if (toMinute(e.getDateTime()).equals(dateTimeTemp) && authorId.equals(e.getAuthor().getId())){
-        throw new IllegalArgumentException("Duplicated entry in diary registry: Date/Time: "+ dateTimeTemp +" and author ID: "+ authorId);
-      }
-    }
+
     entries.add(entry);
   }
 
@@ -53,9 +49,8 @@ public class DiaryEntryRegister{
   public Optional<DiaryEntry> getEntry(LocalDateTime dateTime, UUID authorId){
     Objects.requireNonNull(dateTime, "dateTime must not be null");
     Objects.requireNonNull(authorId, "authorId must not be null");
-    LocalDateTime roundedDateTime = toMinute(dateTime);
     for (DiaryEntry e: entries){
-      if (roundedDateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
+      if (dateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
   return Optional.of(e);
       }
     }
@@ -90,15 +85,13 @@ public class DiaryEntryRegister{
   public List<DiaryEntry> findBetween(LocalDateTime fromInclusive, LocalDateTime toExclusive){
     Objects.requireNonNull(fromInclusive, "Time from must not be null");
     Objects.requireNonNull(toExclusive, "Time to must not be null");
-    LocalDateTime from = toMinute(fromInclusive);
-    LocalDateTime to = toMinute(toExclusive);
-    if (!from.isBefore(to)){
+    if (!fromInclusive.isBefore(toExclusive)){
       throw new IllegalArgumentException("From time must be before after time");
     }
     List<DiaryEntry> out = new ArrayList<>();
     for (DiaryEntry entry : entries){
       LocalDateTime dateTime = entry.getDateTime();
-      if ((dateTime.equals(from) || dateTime.isAfter(from)) && dateTime.isBefore(to)){
+      if ((dateTime.equals(fromInclusive) || dateTime.isAfter(fromInclusive)) && dateTime.isBefore(toExclusive)){
         out.add(entry);
       }
     }
@@ -107,35 +100,23 @@ public class DiaryEntryRegister{
   }
 
   /**
-   * Removes entry by exact dateTime and authorId
-   * @param dateTime
-   * @param authorId
+   * Removes entry by entryID
+   * @param entryID UUID of DiaryEntry
    * @return
    */
-  public boolean removeEntry(LocalDateTime dateTime, UUID authorId){
-    Objects.requireNonNull(dateTime, "dateTime must not be null");
-    Objects.requireNonNull(authorId, "authorId must not be null");
-    LocalDateTime roundedDateTime = toMinute(dateTime);
-    ListIterator<DiaryEntry> iterator = entries.listIterator();
-    while (iterator.hasNext()){
-      DiaryEntry entry = iterator.next();
-      if (roundedDateTime.equals(entry.getDateTime())
-          && authorId.equals(entry.getAuthor().getId())) {
-        iterator.remove();
-        return true;
-      }
-    }
-    return false;
+  public boolean removeEntry(UUID entryID){
+    Objects.requireNonNull(entryID, "entryID must not be null");
+    return entries.removeIf(e -> e.getEntryID().equals(entryID));
   }
 
   /**
    * Removes entry by entry
-   * @param entry
+   * @param entry DiaryEntry object
    * @return
    */
   public boolean removeEntry(DiaryEntry entry){
     Objects.requireNonNull(entry, "entry must not be null");
-    return removeEntry(entry.getDateTime(), entry.getAuthor().getId());
+    return removeEntry(entry.getEntryID());
   }
 
   public List<DiaryEntry> getAll(){
@@ -175,10 +156,6 @@ public class DiaryEntryRegister{
    */
   public void clearDiaryEntryRegister(){
     entries.clear();
-  }
-
-  private static LocalDateTime toMinute(LocalDateTime dateTimeInput){
-    return dateTimeInput.truncatedTo(ChronoUnit.MINUTES);
   }
 
 }
