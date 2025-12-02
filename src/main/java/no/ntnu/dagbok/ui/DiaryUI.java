@@ -205,24 +205,52 @@ public class DiaryUI {
   }
 
   /**
-   * Method to show
+   * Method to provide a menu to delete entries from diary entry register
    */
   private void deleteEntry(){
-    LocalDateTime ldt = readDateTime("Time of entry (" + PATTERN_MINUTE + "): ");
-    String authorName = readLine("Author's name: ");
-    Optional<Author> author = authors.findByName(authorName);
-    if (author.isEmpty()){
-      System.out.println("Author not found");
+    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
+    List<DiaryEntry> foundEntries = register.findByDate(date);
+
+    if (foundEntries.isEmpty()) {
+      System.out.println("No diary entries found for this date");
       return;
     }
-    System.out.println("Delete entry at " + DF_MINUTE.format(ldt) + " by " + author.get().getDisplayName() + "?");
-    if (!readYesNo("Are you certain? (y/n): ")){
-      System.out.println("Cancelled");
-      return;
+    System.out.println("Which entry would you like to preview/delete?");
+    for (int i = 0; i < foundEntries.size(); i++){
+      DiaryEntry diaryEntry = foundEntries.get(i);
+      System.out.println(
+          (i + 1)
+              + ": "
+              + diaryEntry.getTitle()
+              + " ("
+              + DF_MINUTE.format(diaryEntry.getDateTime()) + ")");
     }
 
-    boolean authorDeleted = register.removeEntry(ldt,author.get().getId());
-    System.out.println(authorDeleted ? "Deleted" : "Could not find diary entry");
+    int choice = readInt("Write the number of the entry");
+
+    if (choice < 1 || choice > foundEntries.size()){
+      System.out.println("Invalid choice");
+      return;
+    }
+    DiaryEntry entryToDelete = foundEntries.get(choice - 1);
+
+    System.out.println("*** Entry Selected for Deletion ***");
+    System.out.println("_______________________________");
+    showEntry(entryToDelete);
+    System.out.println("--___________________________--");
+    if (readYesNo("Are you certain you want to delete this entry? (y/n): ")){
+      boolean removed = register.removeEntry(entryToDelete.getEntryID());
+      if (removed){
+        System.out.println("Diary entry deleted");
+      } else {
+        System.out.println("Error: Entry not deleted");
+      }
+
+    } else{
+      System.out.println("Entry not deleted");
+    }
+    register.removeEntry(entryToDelete.getEntryID());
+    System.out.println("Entry deleted");
   }
 
   /**
