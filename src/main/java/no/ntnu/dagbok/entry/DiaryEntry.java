@@ -4,6 +4,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import no.ntnu.dagbok.author.Author;
 
 public class DiaryEntry {
@@ -13,6 +14,7 @@ public class DiaryEntry {
   private final LocalDateTime dateTime;
   public static final int TITLE_MAX_LENGTH = 200;
   public static final int TEXT_MAX_LENGTH = 10_000;
+  private final UUID entryID;
 
   /**
    * Constructor for a new DiaryEntry
@@ -24,11 +26,11 @@ public class DiaryEntry {
    *
    */
   public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime){
+    this.entryID = UUID.randomUUID();
     this.author = Objects.requireNonNull(author, "author cannot be null");
     this.title = validateEmptyInput(title,"title", TITLE_MAX_LENGTH);
     this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
-    this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null").truncatedTo(
-        ChronoUnit.MINUTES);
+    this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null");
 
   }
 
@@ -92,6 +94,14 @@ public class DiaryEntry {
    * @return dateTime
    */
   public LocalDateTime getDateTime() {return dateTime;}
+
+  /**
+   * getter for diary entry ID
+   * @return entryID
+   */
+  public UUID getEntryID(){
+    return entryID;
+  }
 
   @Override
   public String toString(){
