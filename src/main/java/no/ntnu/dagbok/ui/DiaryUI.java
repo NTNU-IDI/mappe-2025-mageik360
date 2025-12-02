@@ -38,6 +38,7 @@ public class DiaryUI {
   private static final int LIST_BY_AUTHOR = 5;
   private static final int EDIT_ENTRY = 6;
   private static final int TODAY_ENTRIES = 7;
+  private static final int SEARCH_BY_KEYWORD = 8;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -86,6 +87,7 @@ public class DiaryUI {
         case LIST_BY_AUTHOR -> listByAuthor();
         case EDIT_ENTRY -> editEntry();
         case TODAY_ENTRIES -> todayEntries();
+        case SEARCH_BY_KEYWORD -> searchByKeyword();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -108,8 +110,9 @@ public class DiaryUI {
     System.out.println("5. List entries by author");
     System.out.println("6. Edit diary entry (title/text)");
     System.out.println("7. Show today's diary entries");
+    System.out.println("8. Search by keyword/phrase");
     System.out.println("0. Exit program");
-    return readInt("Pick option");
+    return readInt("Pick option ");
   }
 
   /**
@@ -194,6 +197,20 @@ public class DiaryUI {
       }
     } else{
       System.out.println("Entry text not edited");
+    }
+  }
+
+  /**
+   * Method to let user search for keyword/phrase.
+   */
+  private void searchByKeyword(){
+    String keyword = readLine("Search for word/phrase: ");
+    List<DiaryEntry> results = register.searchByKeyword(keyword);
+    if (results.isEmpty()){
+      System.out.println("No entries found containing keyword: " + keyword);
+    } else {
+      System.out.println("Found " + results.size() + " matches in diary entries: ");
+      list(results);
     }
   }
 
