@@ -47,8 +47,13 @@ public class DiaryUI {
   private static final DateTimeFormatter DF_DATE = DateTimeFormatter.ofPattern(PATTERN_DATE);
 
   private final Scanner scanner = new Scanner(System.in);
-  private final DiaryEntryRegister register = new DiaryEntryRegister();
-  private final AuthorRegister authors = new AuthorRegister();
+  private final DiaryEntryRegister register;
+  private final AuthorRegister authors;
+
+  public DiaryUI(DiaryEntryRegister register, AuthorRegister authors){
+    this.register = register;
+    this.authors = authors;
+  }
 
   /**
    * Seeds demo author and entries on starting the program.
