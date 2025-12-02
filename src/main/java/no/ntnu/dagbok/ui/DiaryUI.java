@@ -249,7 +249,6 @@ public class DiaryUI {
     } else{
       System.out.println("Entry not deleted");
     }
-    register.removeEntry(entryToDelete.getEntryID());
     System.out.println("Entry deleted");
   }
 
