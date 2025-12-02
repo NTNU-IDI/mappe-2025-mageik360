@@ -140,30 +140,55 @@ public class DiaryUI {
    * Method to edit existing diary entries
    */
   private void editEntry(){
-    LocalDateTime when = readDateTime("Entry date/time" + PATTERN_MINUTE);
-    String authorName = readLine("Author's name: ");
-    Optional<Author> author = authors.findByName(authorName);
-    if (author.isEmpty()){
-      System.out.println("No author found by that name.");
-      return;
-    }
-    var option = register.getEntry(when, author.get().getId());
-    if (option.isEmpty()){
-      System.out.println("Entry not found.");
-      return;
-    }
-    DiaryEntry e = option.get();
-    System.out.println("Current title and text:");
-    showEntry(e);
+    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
+    List<DiaryEntry> foundEntries = register.findByDate(date);
 
-    String newTitle = readLine("New title:");
-    String newText = readLine("New text: ");
-    try {
-      if (!newTitle.isBlank()) e.setTitle(newTitle);
-      if (!newText.isBlank()) e.setText(newText);
-      System.out.println("Diary entry updated");
-    } catch (RuntimeException ex){
-      System.out.println("Could not update entry " + ex.getMessage());
+    if (foundEntries.isEmpty()) {
+      System.out.println("No diary entries found for this date");
+      return;
+    }
+    System.out.println("Which entry would you like to edit?");
+    for (int i = 0; i < foundEntries.size(); i++){
+      DiaryEntry diaryEntry = foundEntries.get(i);
+      System.out.printf("%d: %s (%s)%n",
+          (i + 1),
+          diaryEntry.getTitle(),
+          DF_MINUTE.format(diaryEntry.getDateTime())
+      );
+    }
+
+    int choice = readInt("Write the number of the entry");
+
+    if (choice < 1 || choice > foundEntries.size()){
+      System.out.println("Invalid choice");
+      return;
+    }
+    DiaryEntry entryToEdit = foundEntries.get(choice - 1);
+
+    System.out.println("---Entry to Edit---");
+    showEntry(entryToEdit);
+    System.out.println();
+
+    if (readYesNo("Do you want to edit the title? (y/n): ")){
+      try {
+      String newTitle = readLine("New title: ");
+      entryToEdit.setTitle(newTitle); }
+      catch (IllegalArgumentException e) {
+        System.out.println("Error updating title: " + e.getMessage());
+      }
+    } else{
+      System.out.println("Entry title not edited");
+    }
+
+    if (readYesNo("Do you want to edit the text? (y/n): ")){
+      try {
+      String newText = readLine("New text: ");
+      entryToEdit.setText(newText);
+      } catch (IllegalArgumentException e) {
+        System.out.println("Error updating text: " + e.getMessage());
+      }
+    } else{
+      System.out.println("Entry text not edited");
     }
   }
 
@@ -218,12 +243,11 @@ public class DiaryUI {
     System.out.println("Which entry would you like to preview/delete?");
     for (int i = 0; i < foundEntries.size(); i++){
       DiaryEntry diaryEntry = foundEntries.get(i);
-      System.out.println(
-          (i + 1)
-              + ": "
-              + diaryEntry.getTitle()
-              + " ("
-              + DF_MINUTE.format(diaryEntry.getDateTime()) + ")");
+      System.out.printf("%d: %s (%s)%n",
+          (i + 1),
+          diaryEntry.getTitle(),
+          DF_MINUTE.format(diaryEntry.getDateTime())
+      );
     }
 
     int choice = readInt("Write the number of the entry");
@@ -249,7 +273,6 @@ public class DiaryUI {
     } else{
       System.out.println("Entry not deleted");
     }
-    System.out.println("Entry deleted");
   }
 
   /**
