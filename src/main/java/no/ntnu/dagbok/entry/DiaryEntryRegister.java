@@ -137,6 +137,42 @@ public class DiaryEntryRegister{
     return Collections.unmodifiableList(output);
   }
 
+  /**
+   * Searches for diary entries containing specified keyword
+   *
+   * <p>
+   *   Case-insensitive search which checks both the title and the text content of diary entries.
+   *   The results are sorted according to the standard order (date/time then authorID)
+   * </p>
+   *
+   * Use of stream suggested by chatGPT.
+   * @param keyword The keyword to be searched for
+   * @return Unmodifiable list of matching diary entries. Returns an empty list if keyword is blank.
+   * @throws NullPointerException if the keyword is null.
+   */
+  public List<DiaryEntry> searchByKeyword(String keyword){
+    Objects.requireNonNull(keyword, "Keyword cannot be null");
+    String search = keyword.trim().toLowerCase();
+
+    if (search.isEmpty()){
+      return Collections.emptyList();
+    }
+
+    return entries.stream().filter(e -> matchesKeyword(e, search)).sorted(ORDER).toList();
+
+  }
+
+  /**
+   * Helper method to determine if a single entry matches the search criteria.
+   * Use of streams in search suggested by chatGPT.
+   * @param entry The entry being checked.
+   * @param search The term being searched for. Trimmed and in lower case.
+   * @return boolean True if entry contains word, false otherwise
+   */
+  private boolean matchesKeyword(DiaryEntry entry, String search){
+    return entry.getTitle().toLowerCase().contains(search) || entry.getText().toLowerCase().contains(search);
+  }
+
   public long countByAuthor(UUID authorId){
     Objects.requireNonNull(authorId, "authorId must not be null");
     long count = 0;
