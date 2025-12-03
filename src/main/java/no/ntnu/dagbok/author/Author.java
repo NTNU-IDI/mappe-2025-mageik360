@@ -19,20 +19,23 @@ public class Author {
 
   private final UUID id;
   private final LocalDateTime createdAt;
+  private String password;
 
   private String displayName;
   private LocalDateTime updatedAt;
 
-  public Author(String displayName) {
-    this(UUID.randomUUID(), displayName);
+  public Author(String displayName, String password) {
+
+    this(UUID.randomUUID(), displayName, password);
   }
 
-  public Author(UUID id, String displayName){
+  public Author(UUID id, String displayName, String password){
     this.id = Objects.requireNonNull(id, "id must not be null");
     setDisplayNameInternal(validateAndNormalizeForStorage(displayName));
     LocalDateTime presentTime = LocalDateTime.now();
     this.createdAt = presentTime;
     this.updatedAt = presentTime;
+    this.password = validatePassword(password);
   }
 
   /**
@@ -148,6 +151,22 @@ public class Author {
   public int hashCode(){
     return id.hashCode()
 ;  }
+
+  /**
+   * Checks in the provided password is correct.
+   * @param input password to be checked.
+   * @return true if password matches, false otherwise.
+   */
+  public boolean checkPassword(String input){
+    return this.password.equals(input);
+  }
+
+  private String validatePassword(String input){
+    if (input == null || input.length() < 4) {
+      throw new IllegalArgumentException("Password must be at least 4 characters long");
+    }
+    return input;
+  }
 
   /**
    * Overridden printing of author info

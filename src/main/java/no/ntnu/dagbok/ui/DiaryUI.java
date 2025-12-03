@@ -51,6 +51,8 @@ public class DiaryUI {
   private final DiaryEntryRegister register;
   private final AuthorRegister authors;
 
+  private Author currentUser;
+
   public DiaryUI(DiaryEntryRegister register, AuthorRegister authors){
     this.register = register;
     this.authors = authors;
@@ -61,8 +63,8 @@ public class DiaryUI {
    */
   public void init(){
 
-    Author lars = authors.addAuthor("Lars");
-    Author lisa = authors.addAuthor("Lisa");
+    Author lars = authors.addAuthor("Lars", "password");
+    Author lisa = authors.addAuthor("Lisa", "password");
     DiaryEntry larsEntry1 = new DiaryEntry(lars,"Title 1", "Text 1 Lars", LocalDateTime.now());
     DiaryEntry lisaEntry1 = new DiaryEntry(lisa,"Title 2", "Text 2 Lisa", LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
     DiaryEntry larsEntry2 = new DiaryEntry(lars, "Title 3", "Text 3 Lars", LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
@@ -76,6 +78,13 @@ public class DiaryUI {
    * Doesn't throw due to invalid input. Instead, ask for new input.
    */
   public void start(){
+
+    System.out.println("Diary Application Starting...");
+
+    loginOrRegister();
+
+    System.out.println("Welcome " + currentUser.getDisplayName() + "!" );
+
     boolean finished = false;
     while (!finished) {
       int choice = displayMenu();
@@ -116,32 +125,18 @@ public class DiaryUI {
   }
 
   /**
-   * Prompts for author, title, text, and date/time (yyyy-MM-dd HH:mm), then add the entry.
-   * Creates the author if not found in register (asks for confirmation).
-   * Uses minute-level time precision.
-   * On invalid data or duplicate (identical author and time), prints errror and returns without throwing error.
+   * Method to allow logged-in user to add diary entry.
    */
   private void addEntry(){
-    try {
-    String authorName = readLine("Author name: ");
-    Author author = authors.findByName(authorName).orElse(null);
-    if (author == null) {
-      boolean create = readYesNo("Author not found. Add " + authorName + " as author? (y/n): ");
-      if (!create){
-        System.out.println("Operation cancelled");
-        return;
-      }
-      author = authors.addAuthor(authorName);
-    }
+    System.out.println("Creating entry as: " + currentUser.getDisplayName());
+
     String title = readLine("Title: ");
     String text = readLine("Text: ");
-    LocalDateTime dateTime = readDateTime("Date/Time (" + PATTERN_MINUTE + "): ");
-    DiaryEntry inputEntry = new DiaryEntry(author,title,text,dateTime);
+    LocalDateTime dateTime = LocalDateTime.now();
+
+    DiaryEntry inputEntry = new DiaryEntry(currentUser, title, text, dateTime);
     register.addEntry(inputEntry);
-    System.out.println("Entry added");}
-    catch (RuntimeException e) {
-      System.out.println("Could not add diary entry: " +e.getMessage());
-    }
+    System.out.println("Entry successfully added");
   }
 
   /**
@@ -172,6 +167,11 @@ public class DiaryUI {
       return;
     }
     DiaryEntry entryToEdit = foundEntries.get(choice - 1);
+
+    if (!entryToEdit.getAuthor().equals(currentUser)){
+      System.out.println("Access Denied: You can only edit your own entries.");
+      return;
+    }
 
     System.out.println("---Entry to Edit---");
     showEntry(entryToEdit);
@@ -294,6 +294,59 @@ public class DiaryUI {
 
     } else{
       System.out.println("Entry not deleted");
+    }
+  }
+
+  private void loginOrRegister(){
+    while (currentUser == null) {
+      System.out.println("1. Login");
+      System.out.println("2. New User");
+      int choice = readInt("Choose option: ");
+
+      if (choice == 1){
+        performLogin();
+      } else if (choice  == 2){
+        performRegistration();
+      } else {
+        System.out.println("Invalid choice.");
+      }
+    }
+  }
+
+  /**
+   * Gives user the option to log in.
+   */
+  private void performLogin(){
+    String name = readLine("Username: ");
+    Optional<Author> authorOpt = authors.findByName(name);
+
+    if (authorOpt.isEmpty()){
+      System.out.println("User not found.");
+      return;
+    }
+
+    Author author = authorOpt.get();
+    String password = readLine("Password: ");
+
+    if (author.checkPassword(password)){
+      this.currentUser = author;
+    } else {
+      System.out.println("Incorrect password.");
+    }
+  }
+
+  private void performRegistration(){
+    String name = readLine("Choose username: ");
+    if (authors.findByName(name).isPresent()){
+      System.out.println("User already exists");
+      return;
+    }
+    String password = readLine("Choose password: ");
+    try {
+      this.currentUser = authors.addAuthor(name, password);
+      System.out.println("User successfully created.");
+    } catch (IllegalArgumentException e) {
+      System.out.println("Could not create user: " + e.getMessage());
     }
   }
 
