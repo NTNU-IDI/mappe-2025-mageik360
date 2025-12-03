@@ -14,9 +14,9 @@ public class AuthorRegister {
    * @throws RuntimeException for invalid author names
    * @return author
    */
-  public Author addAuthor(String displayName){
+  public Author addAuthor(String displayName, String password){
     Objects.requireNonNull(displayName, "displayName must not be null");
-    Author author = new Author(displayName);
+    Author author = new Author(displayName, password);
     idMap.put(author.getId(),author);
     return author;
   }
