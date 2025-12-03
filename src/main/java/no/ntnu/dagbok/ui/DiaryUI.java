@@ -39,6 +39,7 @@ public class DiaryUI {
   private static final int EDIT_ENTRY = 6;
   private static final int TODAY_ENTRIES = 7;
   private static final int SEARCH_BY_KEYWORD = 8;
+  private static final int STATISTICS = 9;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -97,6 +98,7 @@ public class DiaryUI {
         case EDIT_ENTRY -> editEntry();
         case TODAY_ENTRIES -> todayEntries();
         case SEARCH_BY_KEYWORD -> searchByKeyword();
+        case STATISTICS -> showStatistics();
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -120,6 +122,7 @@ public class DiaryUI {
     System.out.println("6. Edit diary entry (title/text)");
     System.out.println("7. Show today's diary entries");
     System.out.println("8. Search by keyword/phrase");
+    System.out.println("9. View diary statistics");
     System.out.println("0. Exit program");
     return readInt("Pick option ");
   }
@@ -212,6 +215,15 @@ public class DiaryUI {
       System.out.println("Found " + results.size() + " matches in diary entries: ");
       list(results);
     }
+  }
+
+  /**
+   * Method to show user's diary statistics.
+   */
+  private void showStatistics(){
+    System.out.println(register.getStatistics(currentUser.getId()));
+    System.out.println("Press enter to go back to menu.");
+    scanner.nextLine();
   }
 
   /**
