@@ -168,6 +168,11 @@ public class DiaryUI {
     }
     DiaryEntry entryToEdit = foundEntries.get(choice - 1);
 
+    if (!entryToEdit.getAuthor().equals(currentUser)){
+      System.out.println("Access Denied: You can only edit your own entries.");
+      return;
+    }
+
     System.out.println("---Entry to Edit---");
     showEntry(entryToEdit);
     System.out.println();
