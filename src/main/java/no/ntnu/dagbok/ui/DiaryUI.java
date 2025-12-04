@@ -66,6 +66,7 @@ public class DiaryUI {
 
     Author lars = authors.addAuthor("Lars", "password");
     Author lisa = authors.addAuthor("Lisa", "password");
+    Author admin = authors.addAuthor("admin", "admin123");
     DiaryEntry larsEntry1 = new DiaryEntry(lars,"Title 1", "Text 1 Lars", LocalDateTime.now());
     DiaryEntry lisaEntry1 = new DiaryEntry(lisa,"Title 2", "Text 2 Lisa", LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
     DiaryEntry larsEntry2 = new DiaryEntry(lars, "Title 3", "Text 3 Lars", LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
@@ -234,10 +235,20 @@ public class DiaryUI {
   }
 
   /**
-   * Method to show a list of all diary entries.
+   * Method to show a list of diary entries.
+   * Admin sees all entries. Normal users see their own entries.
    */
   private void listAll(){
-    list(register.getAll());
+    List<DiaryEntry> entriesToShow;
+
+    if (isAdmin()){
+      System.out.println("--- *** ADMIN ACCESS: All Entries Visisble *** ---");
+      entriesToShow = register.getAll();
+    } else {
+      System.out.println("--- All entries for " + currentUser.getDisplayName() + " ---");
+      entriesToShow = register.findByAuthor(currentUser.getId());
+    }
+    list(entriesToShow);
   }
 
   /**
@@ -443,6 +454,34 @@ public class DiaryUI {
       if (s.equals("n")) return false;
       System.out.println("Type y/n for yes or no");
     }
+  }
+
+  /**
+   * Checks if the user should have access to administrative powers.
+   *
+   * @return true if user is called "admin", false otherwise.
+   */
+  private boolean isAdmin(){
+    return currentUser != null && currentUser.getDisplayName().equalsIgnoreCase("admin");
+  }
+
+  /**
+   * Filters a list of entries based on logged-in user's role
+   * - Admin: Has full access.
+   * - Normal user: Only has access to their own entries.
+   *
+   * Streaming made with help from AI.
+   * @param entries A list of diary entries to check.
+   * @return A filtered list of diary entries based on user status.
+   */
+  private List<DiaryEntry> applyAccessControl(List<DiaryEntry> entries){
+    if (entries.isEmpty()) return entries;
+
+    if (isAdmin()){
+      return entries;
+    }
+
+    return entries.stream().filter(e -> e.getAuthor().equals(currentUser)).toList();
   }
 
 
