@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DiaryEntryTest {
+
+  private final String dummyPassword = "dummyPassword";
   @Test void constructor_acceptsValidValues(){
-    Author a = new Author("Lars");
+    Author a = new Author("Lars", dummyPassword);
     LocalDateTime dateTime = LocalDateTime.of(2025,12,12,12,12);
     DiaryEntry diaryEntry = new DiaryEntry(a,"Title", "Text", dateTime);
 
@@ -20,7 +22,7 @@ class DiaryEntryTest {
 
   @Test
   void constructor_rejectsInvalidValues(){
-    Author a = new Author("Lisa");
+    Author a = new Author("Lisa", dummyPassword);
     LocalDateTime dateTime = LocalDateTime.of(2025,1,1,10,0);
     assertThrows(NullPointerException.class, () -> new DiaryEntry(null,"title", "text", dateTime));
     assertThrows(NullPointerException.class, () -> new DiaryEntry(a,null, "text", dateTime));
@@ -32,7 +34,7 @@ class DiaryEntryTest {
 
   @Test
   void setters_trim_and_validate(){
-    DiaryEntry diaryEntry = new DiaryEntry(new Author("Linda"), "Title","Text", LocalDateTime.now());
+    DiaryEntry diaryEntry = new DiaryEntry(new Author("Linda", dummyPassword), "Title","Text", LocalDateTime.now());
     diaryEntry.setTitle("  New Title  ");
     diaryEntry.setText("  New Text  ");
 
@@ -50,7 +52,7 @@ class DiaryEntryTest {
   }
   @Test
   void constructor_accepts_exact_max_lengths(){
-    Author a = new Author("Lars");
+    Author a = new Author("Lars", dummyPassword);
     String title = repeat('A', DiaryEntry.TITLE_MAX_LENGTH);
     String text = repeat('B', DiaryEntry.TEXT_MAX_LENGTH);
     DiaryEntry e = new DiaryEntry(a, title,text,LocalDateTime.of(2025,1,1,10,10));
@@ -60,7 +62,7 @@ class DiaryEntryTest {
 
   @Test
   void constructor_reject_over_max_lengths(){
-    Author a = new Author("Hanna");
+    Author a = new Author("Hanna", dummyPassword);
     String tooLongTitle = repeat('A', DiaryEntry.TITLE_MAX_LENGTH+1);
     String okText = "Text";
     assertThrows(IllegalArgumentException.class,()-> new DiaryEntry(a,tooLongTitle,okText,LocalDateTime.of(2025,1,1,10,10)));
@@ -71,7 +73,7 @@ class DiaryEntryTest {
   }
   @Test
   void setters_enforce_limits_and_trimming(){
-    DiaryEntry e = new DiaryEntry(new Author("Leonora"),"Title", "Text", LocalDateTime.of(2025,1,1,10,0));
+    DiaryEntry e = new DiaryEntry(new Author("Leonora", dummyPassword),"Title", "Text", LocalDateTime.of(2025,1,1,10,0));
     e.setTitle("  Title  ");
     e.setText("  Text  ");
     assertEquals("Title",e.getTitle());

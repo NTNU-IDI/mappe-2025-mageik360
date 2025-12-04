@@ -11,11 +11,12 @@ import org.junit.jupiter.api.Test;
 
 public class DiaryEntryRegisterFindBetweenTest {
 
+  private final String dummyPassword = "dummyPassword";
   @Test
   void returns_entries_in_half_open_interval_sorted_and_unmodifiable(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
-    Author a = new Author("Lars");
-    Author b = new Author("Linda");
+    Author a = new Author("Lars", dummyPassword);
+    Author b = new Author("Linda", dummyPassword);
 
     LocalDateTime t0900 = LocalDateTime.of(2025,11,8,9,0,30);
     LocalDateTime t0930 = LocalDateTime.of(2025,11,8,9,30,5);
@@ -49,7 +50,7 @@ public class DiaryEntryRegisterFindBetweenTest {
   @Test
   void respects_minute_precision_on_bound(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
-    Author a = new Author("Karoline");
+    Author a = new Author("Karoline", dummyPassword);
     reg.addEntry(new DiaryEntry(a, "A","a", LocalDateTime.of(2025,11,8,9,0,45)));
     List<DiaryEntry> result = reg.findBetween(
       LocalDateTime.of(2025,11,8,9,0,10),
