@@ -208,7 +208,7 @@ public class DiaryEntryRegister{
 
     StringBuilder sb = new StringBuilder();
 
-    sb.append("--- Diary Statistics ---");
+    sb.append("--- Diary Statistics ---\n");
     sb.append("Total entries: ").append(totalEntries).append("\n");
     sb.append("Total word count: ").append(totalWords).append("\n");
     sb.append("Average word count: ").append(totalWords / totalEntries).append("\n");

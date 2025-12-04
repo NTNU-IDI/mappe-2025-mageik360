@@ -84,7 +84,7 @@ public class DiaryUI {
 
     loginOrRegister();
 
-    System.out.println("Welcome " + currentUser.getDisplayName() + "!" );
+    System.out.println("\n\nWelcome, " + currentUser.getDisplayName() + "!" );
 
     boolean finished = false;
     while (!finished) {
