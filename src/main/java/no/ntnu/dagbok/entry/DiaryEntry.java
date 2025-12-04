@@ -103,6 +103,19 @@ public class DiaryEntry {
     return entryID;
   }
 
+  /**
+   * Calculates the word count in text.
+   * Splits on spaces.
+   *
+   * @return word count
+   */
+  public int getWordCount(){
+    if (text == null || text.isBlank()){
+      return 0;
+    }
+    return text.trim().split("\\s+").length;
+  }
+
   @Override
   public String toString(){
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

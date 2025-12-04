@@ -182,6 +182,51 @@ public class DiaryEntryRegister{
     return count;
   }
 
+  /**
+   * Generates a string of user's diary statistics
+   *
+   * Stream formatting provided by AI
+   * @param authorId The UUID of the author to generate a statistics panel for.
+   * @return A formatted string of user statistics.
+   */
+  public String getStatistics(UUID authorId){
+    Objects.requireNonNull(authorId, "authorId must not be null");
+
+    List<DiaryEntry> userEntries = findByAuthor(authorId);
+
+    if (userEntries.isEmpty()){
+      return "No statistics availale - Author has no entries.";
+    }
+
+    long totalEntries = userEntries.size();
+
+    long totalWords = userEntries.stream().mapToInt(DiaryEntry::getWordCount).sum();
+
+    DiaryEntry longestEntry = userEntries.stream().max(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
+
+    DiaryEntry shortestEntry = userEntries.stream().min(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("--- Diary Statistics ---\n");
+    sb.append("Total entries: ").append(totalEntries).append("\n");
+    sb.append("Total word count: ").append(totalWords).append("\n");
+    sb.append("Average word count: ").append(totalWords / totalEntries).append("\n");
+
+    if (longestEntry != null){
+      sb.append("Longest entry: ").append(longestEntry.getTitle())
+          .append(" (").append(longestEntry.getWordCount()).append(" words)\n");
+
+    }
+
+    if (shortestEntry != null){
+      sb.append("Shortest entry: ").append(shortestEntry.getTitle())
+          .append(" (").append(shortestEntry.getWordCount()).append(" words)\n");
+    }
+
+    return sb.toString();
+  }
+
 
   public int getNumberOfEntries(){
     return entries.size();
