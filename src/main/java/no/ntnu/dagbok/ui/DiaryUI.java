@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import no.ntnu.dagbok.author.Author;
@@ -35,11 +36,13 @@ public class DiaryUI {
   private static final int LIST_ALL = 2;
   private static final int SEARCH_BY_DATE = 3;
   private static final int DELETE_ENTRY = 4;
-  private static final int LIST_BY_AUTHOR = 5;
-  private static final int EDIT_ENTRY = 6;
-  private static final int TODAY_ENTRIES = 7;
-  private static final int SEARCH_BY_KEYWORD = 8;
+  private static final int EDIT_ENTRY = 5;
+  private static final int TODAY_ENTRIES = 6;
+  private static final int SEARCH_BY_KEYWORD = 7;
+  private static final int SEARCH_BETWEEN = 8;
   private static final int STATISTICS = 9;
+  private static final int LIST_BY_AUTHOR = 10;
+  private static final int GLOBAL_STATISTICS = 11;
   private static final int EXIT_PROGRAM = 0;
 
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -66,6 +69,7 @@ public class DiaryUI {
 
     Author lars = authors.addAuthor("Lars", "password");
     Author lisa = authors.addAuthor("Lisa", "password");
+    Author admin = authors.addAuthor("admin", "admin123");
     DiaryEntry larsEntry1 = new DiaryEntry(lars,"Title 1", "Text 1 Lars", LocalDateTime.now());
     DiaryEntry lisaEntry1 = new DiaryEntry(lisa,"Title 2", "Text 2 Lisa", LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
     DiaryEntry larsEntry2 = new DiaryEntry(lars, "Title 3", "Text 3 Lars", LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
@@ -94,11 +98,19 @@ public class DiaryUI {
         case LIST_ALL -> listAll();
         case SEARCH_BY_DATE -> searchByDate();
         case DELETE_ENTRY -> deleteEntry();
-        case LIST_BY_AUTHOR -> listByAuthor();
         case EDIT_ENTRY -> editEntry();
         case TODAY_ENTRIES -> todayEntries();
         case SEARCH_BY_KEYWORD -> searchByKeyword();
+        case SEARCH_BETWEEN -> searchBetweenDates();
         case STATISTICS -> showStatistics();
+        case LIST_BY_AUTHOR -> {
+          if (isAdmin()) listByAuthor();
+          else System.out.println("Invalid option.");
+        }
+        case GLOBAL_STATISTICS -> {
+            if (isAdmin()) showGlobalStatsTable();
+            else System.out.println("Invalid option.");
+        }
         case EXIT_PROGRAM -> {
           System.out.println("Exiting program");
           finished = true;
@@ -118,11 +130,16 @@ public class DiaryUI {
     System.out.println("2. List all entries ");
     System.out.println("3. Search by date");
     System.out.println("4. Delete diary entry");
-    System.out.println("5. List entries by author");
-    System.out.println("6. Edit diary entry (title/text)");
-    System.out.println("7. Show today's diary entries");
-    System.out.println("8. Search by keyword/phrase");
+
+    System.out.println("5. Edit diary entry (title/text)");
+    System.out.println("6. Show today's diary entries");
+    System.out.println("7. Search by keyword/phrase");
+    System.out.println("8. View by date range");
     System.out.println("9. View diary statistics");
+    if (isAdmin()){
+      System.out.println("10. List entries by author (Admin)");
+      System.out.println("11. View global statistics (Admin)");
+    }
     System.out.println("0. Exit program");
     return readInt("Pick option ");
   }
@@ -135,7 +152,12 @@ public class DiaryUI {
 
     String title = readLine("Title: ");
     String text = readLine("Text: ");
-    LocalDateTime dateTime = LocalDateTime.now();
+    LocalDateTime dateTime;
+    if (readYesNo("Use current time (" + DF_MINUTE.format(LocalDateTime.now()) +")? (y/n): ")){
+      dateTime = LocalDateTime.now();
+    } else {
+      dateTime = readDateTime("Enter date/time (" + PATTERN_MINUTE + "): ");
+    }
 
     DiaryEntry inputEntry = new DiaryEntry(currentUser, title, text, dateTime);
     register.addEntry(inputEntry);
@@ -148,33 +170,31 @@ public class DiaryUI {
   private void editEntry(){
     LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
     List<DiaryEntry> foundEntries = register.findByDate(date);
+    List<DiaryEntry> viewableEntries = applyAccessControl(foundEntries);
 
     if (foundEntries.isEmpty()) {
       System.out.println("No diary entries found for this date");
       return;
     }
     System.out.println("Which entry would you like to edit?");
-    for (int i = 0; i < foundEntries.size(); i++){
-      DiaryEntry diaryEntry = foundEntries.get(i);
-      System.out.printf("%d: %s (%s)%n",
+    for (int i = 0; i < viewableEntries.size(); i++){
+      DiaryEntry diaryEntry = viewableEntries.get(i);
+      System.out.printf(
+          "%d: %s (%s) - [%s]%n",
           (i + 1),
           diaryEntry.getTitle(),
-          DF_MINUTE.format(diaryEntry.getDateTime())
+          DF_MINUTE.format(diaryEntry.getDateTime()),
+          diaryEntry.getAuthor().getDisplayName()
       );
     }
 
-    int choice = readInt("Write the number of the entry");
+    int choice = readInt("Write the number of the entry: ");
 
-    if (choice < 1 || choice > foundEntries.size()){
+    if (choice < 1 || choice > viewableEntries.size()){
       System.out.println("Invalid choice");
       return;
     }
-    DiaryEntry entryToEdit = foundEntries.get(choice - 1);
-
-    if (!entryToEdit.getAuthor().equals(currentUser)){
-      System.out.println("Access Denied: You can only edit your own entries.");
-      return;
-    }
+    DiaryEntry entryToEdit = viewableEntries.get(choice - 1);
 
     System.out.println("---Entry to Edit---");
     showEntry(entryToEdit);
@@ -209,11 +229,13 @@ public class DiaryUI {
   private void searchByKeyword(){
     String keyword = readLine("Search for word/phrase: ");
     List<DiaryEntry> results = register.searchByKeyword(keyword);
+
+    List<DiaryEntry> visibleResults = applyAccessControl(results);
     if (results.isEmpty()){
       System.out.println("No entries found containing keyword: " + keyword);
     } else {
-      System.out.println("Found " + results.size() + " matches in diary entries: ");
-      list(results);
+      System.out.println("Found " + visibleResults.size() + " matches in diary entries: ");
+      list(visibleResults);
     }
   }
 
@@ -228,16 +250,28 @@ public class DiaryUI {
 
   /**
    * Method to show a list of diary entries made today.
+   * Filter based on access rights.
    */
   private void todayEntries(){
-    list(register.findByDate(LocalDate.now()));
+    List<DiaryEntry> allToday = register.findByDate(LocalDate.now());
+    list(applyAccessControl(allToday));
   }
 
   /**
-   * Method to show a list of all diary entries.
+   * Method to show a list of diary entries.
+   * Admin sees all entries. Normal users see their own entries.
    */
   private void listAll(){
-    list(register.getAll());
+    List<DiaryEntry> entriesToShow;
+
+    if (isAdmin()){
+      System.out.println("--- *** ADMIN ACCESS: All Entries Visisble *** ---");
+      entriesToShow = register.getAll();
+    } else {
+      System.out.println("--- All entries for " + currentUser.getDisplayName() + " ---");
+      entriesToShow = register.findByAuthor(currentUser.getId());
+    }
+    list(entriesToShow);
   }
 
   /**
@@ -258,9 +292,11 @@ public class DiaryUI {
    */
   private void searchByDate(){
     LocalDate date = readDate("Date ("+ PATTERN_DATE +"):");
-    List<DiaryEntry> found = register.findByDate(date);
-    if (found.isEmpty()) System.out.println("No diary entries from this date");
-    else list(found);
+    List<DiaryEntry> allFound = register.findByDate(date);
+
+    List<DiaryEntry> viewable = applyAccessControl(allFound);
+    if (viewable.isEmpty()) System.out.println("No diary entries from this date");
+    else list(viewable);
   }
 
   /**
@@ -268,29 +304,31 @@ public class DiaryUI {
    */
   private void deleteEntry(){
     LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
-    List<DiaryEntry> foundEntries = register.findByDate(date);
+    List<DiaryEntry> allEntriesFound = register.findByDate(date);
+    List<DiaryEntry> viewableEntries = applyAccessControl(allEntriesFound);
 
-    if (foundEntries.isEmpty()) {
+    if (viewableEntries.isEmpty()) {
       System.out.println("No diary entries found for this date");
       return;
     }
-    System.out.println("Which entry would you like to preview/delete?");
-    for (int i = 0; i < foundEntries.size(); i++){
-      DiaryEntry diaryEntry = foundEntries.get(i);
-      System.out.printf("%d: %s (%s)%n",
+    System.out.println("Which entry would you like to delete?");
+    for (int i = 0; i < viewableEntries.size(); i++){
+      DiaryEntry diaryEntry = viewableEntries.get(i);
+      System.out.printf("%d: %s (%s) - [%s]%n",
           (i + 1),
           diaryEntry.getTitle(),
-          DF_MINUTE.format(diaryEntry.getDateTime())
+          DF_MINUTE.format(diaryEntry.getDateTime()),
+          diaryEntry.getAuthor().getDisplayName()
       );
     }
 
     int choice = readInt("Write the number of the entry");
 
-    if (choice < 1 || choice > foundEntries.size()){
+    if (choice < 1 || choice > viewableEntries.size()){
       System.out.println("Invalid choice");
       return;
     }
-    DiaryEntry entryToDelete = foundEntries.get(choice - 1);
+    DiaryEntry entryToDelete = viewableEntries.get(choice - 1);
 
     System.out.println("*** Entry Selected for Deletion ***");
     System.out.println("_______________________________");
@@ -307,6 +345,46 @@ public class DiaryUI {
     } else{
       System.out.println("Entry not deleted");
     }
+  }
+
+  /**
+   * Searches for entries between a given time range.
+   */
+  private void searchBetweenDates(){
+    System.out.println("--- Search by Time Range ---");
+    LocalDateTime from = readDateTime("From date/time (" + PATTERN_MINUTE + "): ");
+    LocalDateTime to = readDateTime("To date/time (" + PATTERN_MINUTE + "): ");
+
+    try {
+      List<DiaryEntry> allFound = register.findBetween(from, to);
+      List<DiaryEntry> viewable = applyAccessControl(allFound);
+      if (viewable.isEmpty()){
+        System.out.println("No entries found in this interval");
+      } else {
+        System.out.println("Found " + viewable.size() + " entries:");
+        list(viewable);
+      }
+    } catch (IllegalArgumentException e){
+      System.out.println("Error: " + e.getMessage());
+    }
+  }
+
+  private void showGlobalStatsTable(){
+    System.out.println("--- Global Statistics - Admin Only ---");
+    System.out.printf("%-20s | %s%n","Author","Entries");
+    System.out.println("---------------------|---------");
+    List<Author> allAuthors = authors.getAll();
+    long totalEntries = 0;
+    for (Author a : allAuthors){
+      long count = register.countByAuthor(a.getId());
+      totalEntries += count;
+      System.out.printf("%-20s | %d%n", a.getDisplayName(), count);
+    }
+    System.out.println("---------------------|---------");
+    System.out.println("Total entries in system: " + totalEntries);
+    System.out.println("\nPress enter to go back to main menu");
+    scanner.nextLine();
+
   }
 
   private void loginOrRegister(){
@@ -443,6 +521,34 @@ public class DiaryUI {
       if (s.equals("n")) return false;
       System.out.println("Type y/n for yes or no");
     }
+  }
+
+  /**
+   * Checks if the user should have access to administrative powers.
+   *
+   * @return true if user is called "admin", false otherwise.
+   */
+  private boolean isAdmin(){
+    return currentUser != null && currentUser.getDisplayName().equalsIgnoreCase("admin");
+  }
+
+  /**
+   * Filters a list of entries based on logged-in user's role
+   * - Admin: Has full access.
+   * - Normal user: Only has access to their own entries.
+   *
+   * Streaming made with help from AI.
+   * @param entries A list of diary entries to check.
+   * @return A filtered list of diary entries based on user status.
+   */
+  private List<DiaryEntry> applyAccessControl(List<DiaryEntry> entries){
+    if (entries.isEmpty()) return entries;
+
+    if (isAdmin()){
+      return entries;
+    }
+
+    return entries.stream().filter(e -> e.getAuthor().equals(currentUser)).toList();
   }
 
 
