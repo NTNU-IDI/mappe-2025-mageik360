@@ -13,7 +13,7 @@ public class AuthorTest {
   @Test
   void password_validation_works(){
     assertThrows(IllegalArgumentException.class, () -> new Author("ShortUser", "123"));
-    assertThrows(IllegalArgumentException.class, () -> new Author("NullUser", "null"));
+    assertThrows(IllegalArgumentException.class, () -> new Author("NullUser", null));
 
   }
 

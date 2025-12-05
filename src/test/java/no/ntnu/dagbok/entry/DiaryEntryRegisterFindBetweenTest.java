@@ -48,15 +48,16 @@ public class DiaryEntryRegisterFindBetweenTest {
   }
 
   @Test
-  void respects_minute_precision_on_bound(){
+  void findBetween_respects_exact_time_precision() {
     DiaryEntryRegister reg = new DiaryEntryRegister();
     Author a = new Author("Karoline", dummyPassword);
-    reg.addEntry(new DiaryEntry(a, "A","a", LocalDateTime.of(2025,11,8,9,0,45)));
-    List<DiaryEntry> result = reg.findBetween(
-      LocalDateTime.of(2025,11,8,9,0,10),
-      LocalDateTime.of(2025,11,8,9,1,50)
-    );
-    assertEquals(1,result.size());
-    assertEquals(LocalDateTime.of(2025,11,8,9,0), result.getFirst().getDateTime());
+    LocalDateTime exactTime = LocalDateTime.of(2025, 11, 8, 9, 0, 45);
+    reg.addEntry(new DiaryEntry(a, "A", "a", exactTime));
+    List<DiaryEntry> result =
+        reg.findBetween(
+            LocalDateTime.of(2025, 11, 8, 9, 0, 10),
+            LocalDateTime.of(2025, 11, 8, 9, 1, 50));
+    assertEquals(1, result.size());
+    assertEquals(exactTime, result.getFirst().getDateTime());
   }
 }
