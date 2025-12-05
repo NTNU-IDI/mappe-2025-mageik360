@@ -22,19 +22,30 @@ public class DiaryEntryRegisterSearchTest {
 
   /**
    * Tests that searchKeyword finds matches both in the title and the text.
+   *
+   * <p>
+   * assertEquals for correct number of returned entries.
+   * </p>
    */
   @Test
   void searchByKeyword_finds_matches_in_title_and_text(){
-    register.addEntry(new DiaryEntry(author, "Ferien min", "Reiste til Spania", LocalDateTime.now()));
-    register.addEntry(new DiaryEntry(author,"Arbeid","Møte om planlegging", LocalDateTime.now()));
+    register.addEntry(new DiaryEntry(author, "My Day", "Did nothing", LocalDateTime.now()));
+    register.addEntry(new DiaryEntry(author,"Work","Meeting about planning", LocalDateTime.now()));
 
-    List<DiaryEntry> res1 = register.searchByKeyword("Ferien");
+    List<DiaryEntry> res1 = register.searchByKeyword("Day");
     assertEquals(1, res1.size());
 
-    List<DiaryEntry> res2 = register.searchByKeyword("Møte");
+    List<DiaryEntry> res2 = register.searchByKeyword("Planning");
     assertEquals(1, res2.size());
   }
 
+  /**
+   * Tests that searchByKeyword is case-insensitive
+   *
+   * <p>
+   * assertEquals for correct number of returned entries.
+   * </p>
+   */
   @Test
   void searchByKeyword_is_case_insensitive(){
     register.addEntry(new DiaryEntry(author, "Title", "TEXT", LocalDateTime.now()));
@@ -43,6 +54,13 @@ public class DiaryEntryRegisterSearchTest {
     assertEquals(1,res.size());
   }
 
+  /**
+   * Tests that searchByKeyword returns an empty list when there are no matches.
+   *
+   * <p>
+   * assertTrue for empty list, not null.
+   * </p>
+   */
   @Test
   void searchByKeyword_returns_empty_list_for_no_match(){
     register.addEntry(new DiaryEntry(author, "Title", "Text", LocalDateTime.now()));
@@ -51,6 +69,14 @@ public class DiaryEntryRegisterSearchTest {
     assertTrue(res.isEmpty(), "Should return empty list, not null");
   }
 
+  /**
+   * Tests that removeEntry deletes correct entry based on UUID.
+   *
+   * <p>
+   * assertTrue for returning true boolean.
+   * assertEquals for number of entries and title.
+   * </p>
+   */
   @Test
   void removeEntry_deletes_correct_entry_by_uuid(){
     DiaryEntry e1 = new DiaryEntry(author, "Title1", "Text1", LocalDateTime.now());
@@ -66,6 +92,13 @@ public class DiaryEntryRegisterSearchTest {
     assertEquals("Title2", register.getAll().getFirst().getTitle());
   }
 
+  /**
+   * Tests that getStatistics calculates the correct values.
+   *
+   * <p>
+   * assertTrue for strings containing the correct values.
+   * </p>
+   */
   @Test
   void getStatistics_calculates_correct_totals(){
     register.addEntry(new DiaryEntry(author, "Title1", "word1 word2", LocalDateTime.now()));

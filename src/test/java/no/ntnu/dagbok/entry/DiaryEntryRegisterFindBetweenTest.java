@@ -12,6 +12,16 @@ import org.junit.jupiter.api.Test;
 public class DiaryEntryRegisterFindBetweenTest {
 
   private final String dummyPassword = "dummyPassword";
+
+  /**
+   * Tests to check that returned entries from register are sorted and unmodifiable
+   *
+   * <p>
+   * assertTrue for correct order.
+   * assertThrows for adding entry to returned result.
+   * Made with help from chatGPT.
+   * </p>
+   */
   @Test
   void returns_entries_in_half_open_interval_sorted_and_unmodifiable(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
@@ -38,6 +48,15 @@ public class DiaryEntryRegisterFindBetweenTest {
 
     assertThrows(UnsupportedOperationException.class, () -> result.add(result.getFirst()));
   }
+
+  /**
+   * Tests that invalid time intervals throw an IllegalArgumentException.
+   *
+   * <p>
+   *   assertThrows for start time equal to end time.
+   *   assertThrows for start time after end time.
+   * </p>
+   */
   @Test
   void throws_if_from_not_before_to(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
@@ -47,6 +66,14 @@ public class DiaryEntryRegisterFindBetweenTest {
 
   }
 
+  /**
+   * Tests for  findBetween search functionality respects exact time precision after refactored code.
+   *
+   * <p>
+   *   assertEquals for correct number of returned entries.
+   *   assertEquals for matching time.
+   * </p>
+   */
   @Test
   void findBetween_respects_exact_time_precision() {
     DiaryEntryRegister reg = new DiaryEntryRegister();

@@ -9,6 +9,11 @@ public class AuthorTest {
 
   /**
    * Checks that short/null passwords are not accepted
+   *
+   * <p>
+   *   assertThrows for too short username.
+   *   assertThrwos for null username.
+   * </p>
    */
   @Test
   void password_validation_works(){
@@ -19,9 +24,12 @@ public class AuthorTest {
 
   /**
    * Positive and negative tests for password verification.
+   *
+   * <p>
    * Checks that correct passwords are accepted.
    * Checks that incorrect passwords are not accepted.
    * Checks that password matching is case-sensitive.
+   * </p>
    */
   @Test
   void checkPassword_verifies_author_correctly(){
@@ -35,6 +43,10 @@ public class AuthorTest {
 
   /**
    * Checks that whitespace and case are ignored when using normalizedKey.
+   *
+   * <p>
+   *   assertEquals for identical keys after formatting.
+   * </p>
    */
   @Test
   void normalizedKey_handles_messy_input(){

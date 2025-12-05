@@ -11,7 +11,10 @@ public class DiaryEntryRegisterOrderTest {
 
   /**
    * Test class to check that entries are correctly sorted by date.
+   *
+   * <p>
    * assert equals for each entry in the correct position.
+   * </p>
    */
   @Test
   void entries_are_always_sorted_chronologically(){
@@ -36,8 +39,11 @@ public class DiaryEntryRegisterOrderTest {
 
   /**
    * Test to check that findByDate only returns correctly dated entries.
+   *
+   * <p>
    * assertEquals for correct results length.
    * assertEquals for correct title.
+   * </p>
    */
   @Test
   void findByDate_returns_only_entries_for_specific_date(){
@@ -59,8 +65,11 @@ public class DiaryEntryRegisterOrderTest {
 
   /**
    * Test to check that findByDate returns an empty list if there are no search matches, not a null result.
+   *
+   * <p>
    * Asserts not null.
    * Asserts true for empty list.
+   * </p>
    */
   @Test
   void findByDate_returns_empty_list_if_no_match(){
