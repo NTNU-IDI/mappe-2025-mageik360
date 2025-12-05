@@ -69,7 +69,7 @@ public class AuthorRegister {
    * @return
    */
   public Author rename(UUID id, String newDisplayName){
-    Objects.requireNonNull(id,"id mustnot be null");
+    Objects.requireNonNull(id,"id must not be null");
     Objects.requireNonNull(newDisplayName, "newDisplayName must not be null");
     Author author = idMap.get(id);
     if (author == null){

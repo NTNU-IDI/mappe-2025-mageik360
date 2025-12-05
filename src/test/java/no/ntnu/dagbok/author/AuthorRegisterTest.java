@@ -6,36 +6,129 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AuthorRegisterTest {
 
   private AuthorRegister reg;
+  private final String dummyPassword = "dummyPassword";
 
   @BeforeEach
   void setUp(){
     reg = new AuthorRegister();
   }
+
+  /**
+   * Tests that addAuthor and findByName do proper normalization.
+   *
+   * <p>
+   *   assertTrue for differently formatted name being found.
+   *   assertEquals for identical id.
+   * </p>
+   */
   @Test
   void add_and_findByName_are_normalized(){
-    Author author = reg.addAuthor("Lars");
+    Author author = reg.addAuthor("Lars",dummyPassword);
     Optional<Author> found = reg.findByName("   lARs   ");
     assertTrue(found.isPresent());
     assertEquals(author.getId(), found.get().getId());
   }
+
+  /**
+   * Tests that getAll returns a sorted and unmodifiable list.
+   *
+   * <p>
+   *   assertEquals for list length.
+   *   assertEquals for each alphabetically sorted name.
+   *   assertThrows for trying to edit the returned list.
+   * </p>
+   * Made with help from chatGPt
+   */
   @Test
   void getAll_returns_sorted_and_unmodifiable(){
-    reg.addAuthor("Bjarne");
-    reg.addAuthor("anne");
-    reg.addAuthor("Georg");
+    reg.addAuthor("Bjarne",dummyPassword);
+    reg.addAuthor("anne",dummyPassword);
+    reg.addAuthor("Georg",dummyPassword);
 
     List<Author> all = reg.getAll();
     assertEquals(3, all.size());
     assertEquals("anne", all.getFirst().getDisplayName());
     assertEquals("Bjarne",all.get(1).getDisplayName());
     assertEquals("Georg", all.get(2).getDisplayName());
-    assertThrows(UnsupportedOperationException.class, () -> all.add(new Author("X")));
+    assertThrows(UnsupportedOperationException.class, () -> all.add(new Author("X",dummyPassword)));
 
+  }
+
+  /**
+   * Tests that rename successfully updates the display name.
+   *
+   * <p>
+   *   assertEquals for direct use of getDisplayName
+   *   assertEquals for getDisplayName from register.
+   * </p>
+   *
+   */
+  @Test
+  void rename_updates_display_name_successfully(){
+
+    Author a = reg.addAuthor("OldName", "password");
+
+    Author updated = reg.rename(a.getId(), "NewName");
+
+    assertEquals("NewName", updated.getDisplayName());
+    assertEquals("NewName", reg.getById(a.getId()).get().getDisplayName());
+  }
+
+  /**
+   * Tests that rename throws a runtime exception if a name is taken.
+   *
+   * <p>
+   *   assertThrows for adding name already present.
+   *   assertThrows for adding name already present with differently formatted name.
+   * </p>
+   */
+  @Test
+  void rename_throws_if_name_is_taken(){
+
+    Author a1 = reg.addAuthor("Lars","pass");
+    Author a2 = reg.addAuthor("Lisa", "pass");
+
+    assertThrows(RuntimeException.class, () -> reg.rename(a1.getId(), "Lisa"));
+    assertThrows(RuntimeException.class, () -> reg.rename(a1.getId(), "LISA"));
+  }
+
+  /**
+   * Tests that rename throws runtime exception is author id is not found.
+   *
+   * <p>
+   *   assertThrows for renaming an author with id not in register.
+   * </p>
+   */
+  @Test
+  void rename_throws_if_author_id_not_found(){
+    assertThrows(RuntimeException.class, () -> reg.rename(UUID.randomUUID(), "NewName"));
+  }
+
+  /**
+   * Tests that remove actually deletes an author.
+   *
+   * <p>
+   *   assertTrue that added author is in register.
+   *   assertTrue for removed boolean being true.
+   *   assertTrue for author id not being in register after removal.
+   * </p>
+   */
+  @Test
+  void remove_deletes_author(){
+    Author a = reg.addAuthor("ToBeDeleted", "pass");
+
+    assertTrue(reg.getById(a.getId()).isPresent());
+
+    boolean removed = reg.remove(a.getId());
+
+    assertTrue(removed, "Removed should return true when successful");
+    assertTrue(reg.getById(a.getId()).isEmpty(), "Author should be removed from register");
   }
 }

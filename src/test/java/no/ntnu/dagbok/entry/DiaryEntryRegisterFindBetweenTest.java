@@ -11,11 +11,22 @@ import org.junit.jupiter.api.Test;
 
 public class DiaryEntryRegisterFindBetweenTest {
 
+  private final String dummyPassword = "dummyPassword";
+
+  /**
+   * Tests to check that returned entries from register are sorted and unmodifiable
+   *
+   * <p>
+   * assertTrue for correct order.
+   * assertThrows for adding entry to returned result.
+   * Made with help from chatGPT.
+   * </p>
+   */
   @Test
   void returns_entries_in_half_open_interval_sorted_and_unmodifiable(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
-    Author a = new Author("Lars");
-    Author b = new Author("Linda");
+    Author a = new Author("Lars", dummyPassword);
+    Author b = new Author("Linda", dummyPassword);
 
     LocalDateTime t0900 = LocalDateTime.of(2025,11,8,9,0,30);
     LocalDateTime t0930 = LocalDateTime.of(2025,11,8,9,30,5);
@@ -37,6 +48,15 @@ public class DiaryEntryRegisterFindBetweenTest {
 
     assertThrows(UnsupportedOperationException.class, () -> result.add(result.getFirst()));
   }
+
+  /**
+   * Tests that invalid time intervals throw an IllegalArgumentException.
+   *
+   * <p>
+   *   assertThrows for start time equal to end time.
+   *   assertThrows for start time after end time.
+   * </p>
+   */
   @Test
   void throws_if_from_not_before_to(){
     DiaryEntryRegister reg = new DiaryEntryRegister();
@@ -46,16 +66,25 @@ public class DiaryEntryRegisterFindBetweenTest {
 
   }
 
+  /**
+   * Tests for  findBetween search functionality respects exact time precision after refactored code.
+   *
+   * <p>
+   *   assertEquals for correct number of returned entries.
+   *   assertEquals for matching time.
+   * </p>
+   */
   @Test
-  void respects_minute_precision_on_bound(){
+  void findBetween_respects_exact_time_precision() {
     DiaryEntryRegister reg = new DiaryEntryRegister();
-    Author a = new Author("Karoline");
-    reg.addEntry(new DiaryEntry(a, "A","a", LocalDateTime.of(2025,11,8,9,0,45)));
-    List<DiaryEntry> result = reg.findBetween(
-      LocalDateTime.of(2025,11,8,9,0,10),
-      LocalDateTime.of(2025,11,8,9,1,50)
-    );
-    assertEquals(1,result.size());
-    assertEquals(LocalDateTime.of(2025,11,8,9,0), result.getFirst().getDateTime());
+    Author a = new Author("Karoline", dummyPassword);
+    LocalDateTime exactTime = LocalDateTime.of(2025, 11, 8, 9, 0, 45);
+    reg.addEntry(new DiaryEntry(a, "A", "a", exactTime));
+    List<DiaryEntry> result =
+        reg.findBetween(
+            LocalDateTime.of(2025, 11, 8, 9, 0, 10),
+            LocalDateTime.of(2025, 11, 8, 9, 1, 50));
+    assertEquals(1, result.size());
+    assertEquals(exactTime, result.getFirst().getDateTime());
   }
 }
