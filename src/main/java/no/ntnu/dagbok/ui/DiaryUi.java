@@ -110,6 +110,8 @@ public class DiaryUi {
 
     System.out.println("\n\nWelcome, " + currentUser.getDisplayName() + "!");
 
+    System.out.println("\nProfile last updated at " + DF_MINUTE.format(currentUser.getUpdatedAt()));
+
     boolean finished = false;
     while (!finished) {
       int choice = displayMenu();
@@ -430,7 +432,9 @@ public class DiaryUi {
    */
   private void showGlobalStatsTable() {
     System.out.println("--- Global Statistics - Admin Only ---");
-    System.out.printf("%-20s | %s%n", "Author","Member Since" ,"Entries");
+
+    System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() +"\n");
+    System.out.printf("%-20s | %-15 | %s%n", "Author","Member Since" ,"Entries");
     System.out.println("---------------------|--------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
@@ -438,7 +442,7 @@ public class DiaryUi {
       long count = register.countByAuthor(a.getId());
       totalEntries += count;
       String dateCreated = a.getCreatedAt().toLocalDate().toString();
-      System.out.printf("%-20s | %d%n", a.getDisplayName(),dateCreated, count);
+      System.out.printf("%-20s | %-15 | %d%n", a.getDisplayName(),dateCreated, count);
     }
     System.out.println("---------------------|--------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
