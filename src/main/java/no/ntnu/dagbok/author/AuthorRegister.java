@@ -160,8 +160,15 @@ public class AuthorRegister {
     return idMap.size();
   }
 
-  /** Removes all authors from the register. */
-  public void clear() {
-    idMap.clear();
+  /**
+   * Removes all authors from the register except for the administrator.
+   *
+   * <p>This ensures the system remains accessible after a reset.
+   * Uses {@code removeIf} to filter out non-admin users.</p>
+   *
+   * <p><i>Admin-filter made with help from AI.</i></p>
+   */
+  public void clearExceptAdmin() {
+    idMap.values().removeIf(author -> !author.getDisplayName().equalsIgnoreCase("admin"));
   }
 }

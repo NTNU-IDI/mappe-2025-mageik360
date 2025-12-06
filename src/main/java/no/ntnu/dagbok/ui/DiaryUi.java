@@ -41,6 +41,7 @@ public class DiaryUi {
   private static final int STATISTICS = 9;
   private static final int LIST_BY_AUTHOR = 10;
   private static final int GLOBAL_STATISTICS = 11;
+  private static final int SYSTEM_RESET = 12;
   private static final int EXIT_PROGRAM = 0;
   // Formatting suggestion from ChatGPT
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -132,6 +133,13 @@ public class DiaryUi {
         case GLOBAL_STATISTICS -> {
           if (isAdmin()) {
             showGlobalStatsTable();
+          } else {
+            System.out.println("Invalid option.");
+          }
+        }
+        case SYSTEM_RESET -> {
+          if (isAdmin()){
+            resetSystem();
           } else {
             System.out.println("Invalid option.");
           }
@@ -436,6 +444,26 @@ public class DiaryUi {
     System.out.println("Total entries in system: " + totalEntries);
     System.out.println("\nPress enter to go back to main menu");
     scanner.nextLine();
+  }
+
+  /**
+   * Deletes all andries an all non-admin authors.
+   * Only available to Admin.
+   */
+  private void resetSystem(){
+    if (!isAdmin()) {return;}
+
+    System.out.println("!!! WARNING - THIS ACTION WILL DELETE ALL AUTHORS AND ENTRIES !!!");
+
+    if (readYesNo("Are you certain you want to delete all entries and authors? (y/n): ")){
+      register.clearDiaryEntryRegister();
+      authors.clearExceptAdmin();
+
+      System.out.println("System reset successful.");
+      System.out.println("All entries deleted. All entries except admin deleted.");
+    } else {
+      System.out.println("System reset cancelled.");
+    }
   }
 
   /**
