@@ -116,4 +116,17 @@ class AuthorRegisterTest {
     assertTrue(removed, "Removed should return true when successful");
     assertTrue(reg.getById(a.getId()).isEmpty(), "Author should be removed from register");
   }
+
+  @Test
+  void clearExceptAdmin_removes_everyone_but_admin() {
+    reg.addAuthor("admin", "pass");
+    reg.addAuthor("Lars", "pass");
+    reg.addAuthor("Lisa", "pass");
+
+    reg.clearExceptAdmin();
+
+    assertEquals(1, reg.getAuthorNumber());
+    assertTrue(reg.findByName("admin").isPresent());
+    assertTrue(reg.findByName("Lars").isEmpty());
+  }
 }
