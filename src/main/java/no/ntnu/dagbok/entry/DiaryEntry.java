@@ -1,123 +1,167 @@
 package no.ntnu.dagbok.entry;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.UUID;
 import no.ntnu.dagbok.author.Author;
 
+/**
+ * Represents a single entry in the diary.
+ *
+ * <p>Each entry consists of an author, a timestamp, a title, and text content.
+ * The ID, Author and Timestamp are immutable after creation, while
+ * the Title and Text can be updated.</p>
+ */
 public class DiaryEntry {
+
+  /** Maximum allowed characters for the entry title. */
+  public static final int TITLE_MAX_LENGTH = 200;
+
+  /** Maximum allowed characters for the entry text. */
+  public static final int TEXT_MAX_LENGTH = 10_000;
   private final Author author;
+  private final LocalDateTime dateTime;
+  private final UUID entryId;
   private String title;
   private String text;
-  private final LocalDateTime dateTime;
-  public static final int TITLE_MAX_LENGTH = 200;
-  public static final int TEXT_MAX_LENGTH = 10_000;
-  private final UUID entryID;
 
   /**
-   * Constructor for a new DiaryEntry
+   * Creates a new diary entry with a unique ID.
    *
-   * @param author The author of the diary entry. Non-null.
-   * @param title The title of the diary entry. Non-null. Not blank.
-   * @param text The text of the diary entry. Non-null. Not blank.
-   * @param dateTime The date and time of the diary entry. Non-null value.
-   *
+   * @param author The author of the diary entry. Must not be null.
+   * @param title The title of the diary entry. Must not be null, blank, or exceed max length.
+   * @param text The text of the diary entry. Must not be null, blank, or exceed max length.
+   * @param dateTime The date and time of the diary entry. Must not be null.
+   * @throws NullPointerException if the author, title, text, or dateTime is null.
+   * @throws IllegalArgumentException if the title or text is blank or too long.
    */
-  public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime){
-    this.entryID = UUID.randomUUID();
+  public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime) {
+    this.entryId = UUID.randomUUID();
     this.author = Objects.requireNonNull(author, "author cannot be null");
-    this.title = validateEmptyInput(title,"title", TITLE_MAX_LENGTH);
+    this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
     this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
     this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null");
-
   }
 
   /**
-   * Reusable validator method for diary constructor and setters.
-   * Suggested improvement by chatGPT
-   * @param value value of field for constructor or setter
-   * @param field name of field used in message
-   * @return validated non-empty field
+   * Validates string input to ensure it is not null, empty, or too long.
+   *
+   * <p><i>Reusable validator method suggested by ChatGPT-</i></p>
+   *
+   * @param value The string value to check.
+   * @param field The name of the field (used for error messages).
+   * @param max The maximum allowed length for the string.
+   * @return The trimmed and validated string.
+   * @throws NullPointerException if the value is null.
+   * @throws IllegalArgumentException if the value is blank or exceeds max length.
    */
-  private static String validateEmptyInput(String value, String field, int max){
+  private static String validateEmptyInput(String value, String field, int max) {
     Objects.requireNonNull(value, field + " cannot be null");
     String trimmed = value.trim();
-    if (trimmed.isEmpty()){
+    if (trimmed.isEmpty()) {
       throw new IllegalArgumentException(field + " cannot be blank");
     }
-    if (trimmed.length() > max){
+    if (trimmed.length() > max) {
       throw new IllegalArgumentException(field + " must be shorter than " + max);
     }
     return trimmed;
   }
 
-  // setter methods
+  // getter methods
 
   /**
-   * setter for title
-   * @param title non-blank
+   * Returns the author of this entry.
+   *
+   * @return The author object.
    */
-  public void setTitle(String title){
+  public Author getAuthor() {
+    return author;
+  }
+
+  /**
+   * Returns the title of the entry.
+   *
+   * @return The entry title.
+   */
+  public String getTitle() {
+    return title;
+  }
+
+  /**
+   * Updates the title of the diary entry.
+   *
+   * @param title The new title. Must not be null, blank, or exceed max length.
+   * @throws NullPointerException if the title is null.
+   * @throws IllegalArgumentException if title is blank or too long.
+   */
+  public void setTitle(String title) {
     this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
   }
 
   /**
-   * setter for text
-   * @param text non-blank
+   * Returns the main text content of the entry.
+   *
+   * @return The entry text.
    */
-  public void setText(String text){
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * Updates the text content of the diary entry.
+   *
+   * @param text The new text content. Must not be null, blank, or exceed max length.
+   * @throws NullPointerException if text is null.
+   * @throws IllegalArgumentException if text is blank or too long.
+   */
+  public void setText(String text) {
     this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
   }
 
-  // getter methods
-  /** getter for author (immutable field)
-   * @return author
+  /**
+   * Returns the creation timestamps of the entry.
+   *
+   * @return The date and time the entry was created.
    */
-  public Author getAuthor() { return author; }
+  public LocalDateTime getDateTime() {
+    return dateTime;
+  }
+
+  // setter methods
 
   /**
-   * getter for title (mutable field)
-   * @return title
+   * Returns the unique identifier for this diary entry.
+   *
+   * @return The entry's UUID.
    */
-  public String getTitle() { return title; }
-
-  /**
-   * getter for text (mutable field)
-   * @return text
-   */
-  public String getText() { return text; }
-
-  /**
-   * getter for dateTime (immutable field)
-   * @return dateTime
-   */
-  public LocalDateTime getDateTime() {return dateTime;}
-
-  /**
-   * getter for diary entry ID
-   * @return entryID
-   */
-  public UUID getEntryID(){
-    return entryID;
+  public UUID getEntryId() {
+    return entryId;
   }
 
   /**
-   * Calculates the word count in text.
-   * Splits on spaces.
+   * Calculates the total number of words in the entry's text.
    *
-   * @return word count
+   * <p>Words are determined by splitting the text by whitespace.</p>
+   *
+   * <p><i>Trimming made with help from AI.</i></p>
+   *
+   * @return The total word count. Returns 0 if text is empty.
    */
-  public int getWordCount(){
-    if (text == null || text.isBlank()){
+  public int getWordCount() {
+    if (text == null || text.isBlank()) {
       return 0;
     }
     return text.trim().split("\\s+").length;
   }
 
+  /**
+   * Returns a string representation of the diary entry.
+   *
+   * @return A formatted string containing timestamp, author, title, and text.
+   */
   @Override
-  public String toString(){
+  public String toString() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     return "[" + dateTime.format(formatter) + "] " + "\n" + author + "\n" + title + "\n" + text;
   }

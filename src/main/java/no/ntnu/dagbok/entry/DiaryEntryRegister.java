@@ -1,73 +1,55 @@
 package no.ntnu.dagbok.entry;
 
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
-import no.ntnu.dagbok.author.Author;
-import java.time.temporal.ChronoUnit;
-
 
 /**
- * Stores diary entries based on (dateTime, authorId) key
- * Ordered first by date/time ascending, then author id ascending
+ * Manages a collection of DiaryEntry objects.
  *
+ * <p>Stores, retrieve, search, and remove diary entries. The entries are stored in a list and are
+ * sorted by ascending date/time and then by author ID.
  */
-public class DiaryEntryRegister{
+public class DiaryEntryRegister {
 
-  private static final Comparator<DiaryEntry> ORDER = Comparator.comparing(DiaryEntry::getDateTime).thenComparing(e -> e.getAuthor().getId());
+  private static final Comparator<DiaryEntry> ORDER =
+      Comparator.comparing(DiaryEntry::getDateTime).thenComparing(e -> e.getAuthor().getId());
 
   private final List<DiaryEntry> entries = new ArrayList<>();
 
   /**
+   * Adds a new diary entry to the register.
    *
-   * @param entry
+   * @param entry The diary entry to be added. Must not be null.
+   * @throws NullPointerException if the entry is null.
    */
-  public void addEntry(DiaryEntry entry){
+  public void addEntry(DiaryEntry entry) {
     Objects.requireNonNull(entry, "entry must not be null");
-    //LocalDateTime dateTimeTemp = Objects.requireNonNull(entry.getDateTime(), "dateTime of entry must not be null");
-    Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
-    //UUID authorId = Objects.requireNonNull(author.getId(), "id of author of entry must not be null");
-
+    // Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be
+    // null");
 
     entries.add(entry);
   }
 
   /**
-   * Get entry by exact dateTime and authorId
-   * @param dateTime
-   * @param authorId
-   * @return
+   * Finds all diary entries for a specific calendar date.
+   *
+   * <p><i>Submapping logic provided by ChatGPT.</i>
+   *
+   * @param date The date to search for.
+   * @return An unmodifiable, sorted list of entries matching the date.
+   * @throws NullPointerException if the date is null.
    */
-  public Optional<DiaryEntry> getEntry(LocalDateTime dateTime, UUID authorId){
-    Objects.requireNonNull(dateTime, "dateTime must not be null");
-    Objects.requireNonNull(authorId, "authorId must not be null");
-    for (DiaryEntry e: entries){
-      if (dateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())){
-  return Optional.of(e);
-      }
-    }
-    return Optional.empty();
-  }
-
-  /**
-   * Find a list of entries from a calendar date
-   * Submapping provided by ChatGPT
-   * @param date
-   * @return
-   */
-  public List<DiaryEntry> findByDate(LocalDate date){
+  public List<DiaryEntry> findByDate(LocalDate date) {
     Objects.requireNonNull(date, "date must not be null");
     List<DiaryEntry> day = new ArrayList<>();
-    for (DiaryEntry e : entries){
-      if (e.getDateTime().toLocalDate().equals(date)){
+    for (DiaryEntry e : entries) {
+      if (e.getDateTime().toLocalDate().equals(date)) {
         day.add(e);
       }
     }
@@ -76,22 +58,29 @@ public class DiaryEntryRegister{
   }
 
   /**
-   * Returns a list of entries made between two dates
-   * Made with help from chatGPT
-   * @param fromInclusive
-   * @param toExclusive
-   * @return
+   * Finds diary entries within a specific time range.
+   *
+   * <p>The range is half-open: [fromInclusive, toExclusive).
+   *
+   * <p><i>Implementation assistance from ChatGPT.</i>
+   *
+   * @param fromInclusive The start time of the search (inclusive).
+   * @param toExclusive The end time of the search (exclusive).
+   * @return An unmodifiable, sorted list of entries within the time range.
+   * @throws NullPointerException if any parameter is null.
+   * @throws IllegalArgumentException if 'from' time is after 'to' time.
    */
-  public List<DiaryEntry> findBetween(LocalDateTime fromInclusive, LocalDateTime toExclusive){
+  public List<DiaryEntry> findBetween(LocalDateTime fromInclusive, LocalDateTime toExclusive) {
     Objects.requireNonNull(fromInclusive, "Time from must not be null");
     Objects.requireNonNull(toExclusive, "Time to must not be null");
-    if (!fromInclusive.isBefore(toExclusive)){
+    if (!fromInclusive.isBefore(toExclusive)) {
       throw new IllegalArgumentException("From time must be before after time");
     }
     List<DiaryEntry> out = new ArrayList<>();
-    for (DiaryEntry entry : entries){
+    for (DiaryEntry entry : entries) {
       LocalDateTime dateTime = entry.getDateTime();
-      if ((dateTime.equals(fromInclusive) || dateTime.isAfter(fromInclusive)) && dateTime.isBefore(toExclusive)){
+      if ((dateTime.equals(fromInclusive) || dateTime.isAfter(fromInclusive))
+          && dateTime.isBefore(toExclusive)) {
         out.add(entry);
       }
     }
@@ -100,36 +89,42 @@ public class DiaryEntryRegister{
   }
 
   /**
-   * Removes entry by entryID
-   * @param entryID UUID of DiaryEntry
-   * @return
+   * Removes a diary entry by its unique ID.
+   *
+   * @param entryId The UUID of the entry to remove.
+   * @return {@code true} if the entry was found and removed, {@code false} otherwise.
+   * @throws NullPointerException if entryId is null.
    */
-  public boolean removeEntry(UUID entryID){
-    Objects.requireNonNull(entryID, "entryID must not be null");
-    return entries.removeIf(e -> e.getEntryID().equals(entryID));
+  public boolean removeEntry(UUID entryId) {
+    Objects.requireNonNull(entryId, "entryId must not be null");
+    return entries.removeIf(e -> e.getEntryId().equals(entryId));
   }
 
   /**
-   * Removes entry by entry
-   * @param entry DiaryEntry object
-   * @return
+   * Retrieves all diary entries in the register.
+   *
+   * @return An unmodifiable list of all entries, sorted by date and author.
    */
-  public boolean removeEntry(DiaryEntry entry){
-    Objects.requireNonNull(entry, "entry must not be null");
-    return removeEntry(entry.getEntryID());
-  }
-
-  public List<DiaryEntry> getAll(){
+  public List<DiaryEntry> getAll() {
     List<DiaryEntry> listCopy = new ArrayList<>(entries);
     listCopy.sort(ORDER);
     return Collections.unmodifiableList(listCopy);
   }
 
-  public List<DiaryEntry> findByAuthor(UUID authorId){
+  /**
+   * Finds all diary entries written by a specific author.
+   *
+   * <p><i>Collections implemented with help from ChatGPT.</i>
+   *
+   * @param authorId The UUID of the author.
+   * @return An unmodifiable, sorted list of the author's entries.
+   * @throws NullPointerException if authorId is null.
+   */
+  public List<DiaryEntry> findByAuthor(UUID authorId) {
     Objects.requireNonNull(authorId, "authorId must not be null");
     List<DiaryEntry> output = new ArrayList<>();
     for (DiaryEntry entry : entries) {
-      if (authorId.equals(entry.getAuthor().getId())){
+      if (authorId.equals(entry.getAuthor().getId())) {
         output.add(entry);
       }
     }
@@ -138,73 +133,86 @@ public class DiaryEntryRegister{
   }
 
   /**
-   * Searches for diary entries containing specified keyword
+   * Searches for diary entries containing a specific keyword
    *
-   * <p>
-   *   Case-insensitive search which checks both the title and the text content of diary entries.
-   *   The results are sorted according to the standard order (date/time then authorID)
-   * </p>
+   * <p>The search is case-insensitive and checks both the title and the text content. The results
+   * are sorted according to the standard order (date/time then authorId).
    *
-   * Use of stream suggested by chatGPT.
-   * @param keyword The keyword to be searched for
-   * @return Unmodifiable list of matching diary entries. Returns an empty list if keyword is blank.
+   * <p><i>Stream implementation suggested by ChatGPT.</i>
+   *
+   * @param keyword The keyword to be searched for.
+   * @return An unmodifiable list of matching diary entries. Returns an empty list if keyword is
+   *     blank.
    * @throws NullPointerException if the keyword is null.
    */
-  public List<DiaryEntry> searchByKeyword(String keyword){
+  public List<DiaryEntry> searchByKeyword(String keyword) {
     Objects.requireNonNull(keyword, "Keyword cannot be null");
     String search = keyword.trim().toLowerCase();
 
-    if (search.isEmpty()){
+    if (search.isEmpty()) {
       return Collections.emptyList();
     }
 
     return entries.stream().filter(e -> matchesKeyword(e, search)).sorted(ORDER).toList();
-
   }
 
   /**
-   * Helper method to determine if a single entry matches the search criteria.
-   * Use of streams in search suggested by chatGPT.
+   * Determines if a single entry matches the search criteria.
+   *
+   * <p><i>Use of streams in search suggested by ChatGPT.</i>
+   *
    * @param entry The entry being checked.
    * @param search The term being searched for. Trimmed and in lower case.
-   * @return boolean True if entry contains word, false otherwise
+   * @return boolean {@code true} if entry title or text contains the search term, {@code false}
+   *     otherwise.
    */
-  private boolean matchesKeyword(DiaryEntry entry, String search){
-    return entry.getTitle().toLowerCase().contains(search) || entry.getText().toLowerCase().contains(search);
+  private boolean matchesKeyword(DiaryEntry entry, String search) {
+    return entry.getTitle().toLowerCase().contains(search)
+        || entry.getText().toLowerCase().contains(search);
   }
 
-  public long countByAuthor(UUID authorId){
+  /**
+   * Counts the total number of entries written by a specific author.
+   *
+   * @param authorId The UUID of the author.
+   * @return The number of entries found.
+   * @throws NullPointerException if authorId is null.
+   */
+  public long countByAuthor(UUID authorId) {
     Objects.requireNonNull(authorId, "authorId must not be null");
     long count = 0;
-    for (DiaryEntry entry: entries){
-      if (authorId.equals(entry.getAuthor().getId())) count++;
+    for (DiaryEntry entry : entries) {
+      if (authorId.equals(entry.getAuthor().getId())) {
+        count++;
+      }
     }
     return count;
   }
 
   /**
-   * Generates a string of user's diary statistics
+   * Generates a statistical summary for a specific author.
    *
-   * Stream formatting provided by AI
-   * @param authorId The UUID of the author to generate a statistics panel for.
-   * @return A formatted string of user statistics.
+   * <p>Includes total entries, total word count, average word count, and identifies the longest and
+   * shortest entries.
+   *
+   * <p><i>Stream formatting provided by AI.</i>
+   *
+   * @param authorId The UUID of the author to generate statistics for.
+   * @return A formatted string containing the user statistics.
+   * @throws NullPointerException if authorId is null.
    */
-  public String getStatistics(UUID authorId){
+  public String getStatistics(UUID authorId) {
     Objects.requireNonNull(authorId, "authorId must not be null");
 
     List<DiaryEntry> userEntries = findByAuthor(authorId);
 
-    if (userEntries.isEmpty()){
+    if (userEntries.isEmpty()) {
       return "No statistics availale - Author has no entries.";
     }
 
     long totalEntries = userEntries.size();
 
     long totalWords = userEntries.stream().mapToInt(DiaryEntry::getWordCount).sum();
-
-    DiaryEntry longestEntry = userEntries.stream().max(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
-
-    DiaryEntry shortestEntry = userEntries.stream().min(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
 
     StringBuilder sb = new StringBuilder();
 
@@ -213,30 +221,42 @@ public class DiaryEntryRegister{
     sb.append("Total word count: ").append(totalWords).append("\n");
     sb.append("Average word count: ").append(totalWords / totalEntries).append("\n");
 
-    if (longestEntry != null){
-      sb.append("Longest entry: ").append(longestEntry.getTitle())
-          .append(" (").append(longestEntry.getWordCount()).append(" words)\n");
+    DiaryEntry longestEntry =
+        userEntries.stream().max(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
 
+    DiaryEntry shortestEntry =
+        userEntries.stream().min(Comparator.comparingInt(DiaryEntry::getWordCount)).orElse(null);
+
+    if (longestEntry != null) {
+      sb.append("Longest entry: ")
+          .append(longestEntry.getTitle())
+          .append(" (")
+          .append(longestEntry.getWordCount())
+          .append(" words)\n");
     }
 
-    if (shortestEntry != null){
-      sb.append("Shortest entry: ").append(shortestEntry.getTitle())
-          .append(" (").append(shortestEntry.getWordCount()).append(" words)\n");
+    if (shortestEntry != null) {
+      sb.append("Shortest entry: ")
+          .append(shortestEntry.getTitle())
+          .append(" (")
+          .append(shortestEntry.getWordCount())
+          .append(" words)\n");
     }
 
     return sb.toString();
   }
 
-
-  public int getNumberOfEntries(){
+  /**
+   * Returns the total number of entries in the register.
+   *
+   * @return The size of the entry list.
+   */
+  public int getNumberOfEntries() {
     return entries.size();
   }
 
-  /**
-   * Removes entries in diary entry register
-   */
-  public void clearDiaryEntryRegister(){
+  /** Removes all entries from the register. */
+  public void clearDiaryEntryRegister() {
     entries.clear();
   }
-
 }

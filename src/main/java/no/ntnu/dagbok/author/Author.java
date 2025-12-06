@@ -7,11 +7,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Object representing a diary entry author
+ * Represents a diary entry author in the system.
  *
- * Identity is kept unique id
- * Display name can be updated, but must have valid formatting
- *
+ * <p>Each author is identified by a unique UUID. Public display name can be updated, but must
+ * follow valid formatting. The class also implements a simple password.
  */
 public class Author {
 
@@ -19,17 +18,37 @@ public class Author {
 
   private final UUID id;
   private final LocalDateTime createdAt;
-  private String password;
+  private final String password;
 
   private String displayName;
   private LocalDateTime updatedAt;
 
+  /**
+   * Creates a new author with the provided display name and password.
+   *
+   * <p>A unique UUID is created and timestamp is set to the current time.
+   *
+   * @param displayName The publicly facing display name of the author. Must not be null or blank.
+   * @param password The user's password. Must meet length requirement.
+   * @throws IllegalArgumentException if display name is invalid or password is too short.
+   * @throws IllegalArgumentException if id or display name is null.
+   */
   public Author(String displayName, String password) {
-
     this(UUID.randomUUID(), displayName, password);
   }
 
-  public Author(UUID id, String displayName, String password){
+  /**
+   * Internal constructor to create an Author with a specific id.
+   *
+   * <p>Initializes creation and update timestamps for current time.
+   *
+   * @param id The unique identifier for the author. Must not be null.
+   * @param displayName The display name of the author. Must not be null or blank.
+   * @param password The password of the author. Must meet length requirement.
+   * @throws IllegalArgumentException if display name is invalid or password is too short.
+   * @throws IllegalArgumentException if id or display name is null.
+   */
+  public Author(UUID id, String displayName, String password) {
     this.id = Objects.requireNonNull(id, "id must not be null");
     setDisplayNameInternal(validateAndNormalizeForStorage(displayName));
     LocalDateTime presentTime = LocalDateTime.now();
@@ -39,44 +58,56 @@ public class Author {
   }
 
   /**
-   * Normalized key used for uniqueness checks
-   * Trims and collapsed whitespace, then transforms to lowercase
-   * Based on suggestion from ChatGPT on how to keep distinct authors in register
-   * @param name Name
-   * @return Kay
+   * Generates a normalized key for uniqueness checks.
+   *
+   * <p>The normalized process trims spaces, removes certain text symbols. Ensures distinct authors
+   * in the register despite formatting changes.
+   *
+   * <p><i>Implementation based on suggestion from ChatGPT.</i>
+   *
+   * @param name The name input to normalize.
+   * @return A normalized string key.
+   * @throws IllegalArgumentException if the name is blank or exceeds maximum length.
+   * @throws NullPointerException if the name is null.
    */
-  public static String normalizedKey(String name){
+  public static String normalizedKey(String name) {
     String trimmed = Objects.requireNonNull(name, "displayName must not be null").trim();
-    if (trimmed.isBlank()){
+    if (trimmed.isBlank()) {
       throw new IllegalArgumentException("displayName must not be blank");
     }
 
     String collapsed = trimmed.replaceAll("\\s+", " ");
-    if (collapsed.length() > MAXIMUM_NAME_LENGTH){
-      throw new IllegalArgumentException("displayName length must be " + MAXIMUM_NAME_LENGTH + " or less");
+    if (collapsed.length() > MAXIMUM_NAME_LENGTH) {
+      throw new IllegalArgumentException(
+          "displayName length must be " + MAXIMUM_NAME_LENGTH + " or less");
     }
 
     String lower = collapsed.toLowerCase(Locale.ROOT);
     String decomposed = Normalizer.normalize(lower, Normalizer.Form.NFD);
-    return decomposed.replaceAll("\\p{M}","");
+    return decomposed.replaceAll("\\p{M}", "");
   }
 
   /**
-   * Validates and returns processed value for displayName
-   * Trims and collapses spaces
+   * Validates and normalizes the display name for storage.
    *
-   * Based on suggestion from ChatGPT on how to improve input validation
+   * <p>Trims leading/trailing whitespace and reduces internal spaces to one.
+   *
+   * <p><i>Based on suggestion from ChatGPT on how to improve input validation.</i>
+   *
    * @param name Input name for author
-   * @return
+   * @return A validated and cleaned string for storage.
+   * @throws IllegalArgumentException if the name is blank or exceeds maximum length.
+   * @throws NullPointerException if the name is null.
    */
-  private static String validateAndNormalizeForStorage(String name){
+  private static String validateAndNormalizeForStorage(String name) {
     String trimmed = Objects.requireNonNull(name, "displayName must not be null").trim();
-    if (trimmed.isBlank()){
+    if (trimmed.isBlank()) {
       throw new IllegalArgumentException("displayName must not be blank");
     }
-    String collapsed = trimmed.replaceAll("\\s+"," ");
-    if (collapsed.length() > MAXIMUM_NAME_LENGTH){
-      throw new IllegalArgumentException("displayName length must be " + MAXIMUM_NAME_LENGTH + " or less");
+    String collapsed = trimmed.replaceAll("\\s+", " ");
+    if (collapsed.length() > MAXIMUM_NAME_LENGTH) {
+      throw new IllegalArgumentException(
+          "displayName length must be " + MAXIMUM_NAME_LENGTH + " or less");
     }
     return collapsed;
   }
@@ -84,10 +115,11 @@ public class Author {
   // setters
 
   /**
-   * Setter for authors actual name
-   * @param updatedDisplayName updated name of author
+   * Updates the author's display name and refreshes the update timestamp.
+   *
+   * @param updatedDisplayName The new, validated author name.
    */
-  void setDisplayNameInternal(String updatedDisplayName){
+  void setDisplayNameInternal(String updatedDisplayName) {
     this.displayName = updatedDisplayName;
     this.updatedAt = LocalDateTime.now();
   }
@@ -95,73 +127,102 @@ public class Author {
   // getters
 
   /**
-   * Getter for actual author name
-   * @return name of author
+   * Returns the display name of the author.
+   *
+   * @return The author's name.
    */
-  public String getDisplayName(){
+  public String getDisplayName() {
     return displayName;
   }
 
   /**
-   * Getter for unique author ID
-   * @return unique ID of author
+   * Returns the unique identifier of the author.
+   *
+   * @return The author's UUID.
    */
-  public UUID getId(){
+  public UUID getId() {
     return id;
   }
 
   /**
-   * Getter for author creation date and time
-   * @return author creation LocalDateTime
+   * Returns the date and time when the author was created.
+   *
+   * @return The creation timestamp.
    */
-  public LocalDateTime getCreatedAt(){
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
   /**
-   * Getter for author update date and time
-   * @return author update LocalDateTime
+   * Returns the date and time when the author was last updated.
+   *
+   * @return The last author update timestamp.
    */
-  public LocalDateTime getUpdatedAt(){
+  public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
-  void rename(String newDisplayName){
+  /**
+   * Renames the author.
+   *
+   * <p>Validates and normalizes the new name before updating.
+   *
+   * @param newDisplayName The new name to set.
+   * @throws IllegalArgumentException if the new name is invalid.
+   */
+  void rename(String newDisplayName) {
     setDisplayNameInternal(validateAndNormalizeForStorage(newDisplayName));
   }
 
   /**
-   * Overridden boolean comparison for authors based on a unique ID
-   * Based normalized key suggestion from ChatGPT
-   * @param o author object to be compared with other author
-   * @return true/false value based on author ID
+   * Indicates if some other object is equal to this one.
+   *
+   * <p>Equality is overwritten to be determined by unique author ID
+   *
+   * @param o The reference object to compare with.
+   * @return {@code true} if the object is the same as the obj argument; {@code false} otherwise.
    */
   @Override
   public boolean equals(Object o) {
-    if ( this == o ) return true;
-    if (!(o instanceof Author other)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Author other)) {
+      return false;
+    }
     return id.equals(other.id);
   }
 
   /**
-   * Overridden hashing based on author ID
-   * @return hash of author ID
+   * Returns a hash code value for the author.
+   *
+   * <p>The hash code is based on the unique Author ID
+   *
+   * @return A hash code value for this object.
    */
   @Override
-  public int hashCode(){
-    return id.hashCode()
-;  }
+  public int hashCode() {
+    return id.hashCode();
+  }
 
   /**
-   * Checks in the provided password is correct.
-   * @param input password to be checked.
-   * @return true if password matches, false otherwise.
+   * Checks in the provided password matches the author's password.
+   *
+   * @param input The password string to verify.
+   * @return {@code true} if the password matches, {@code false} otherwise.
    */
-  public boolean checkPassword(String input){
+  public boolean checkPassword(String input) {
     return this.password.equals(input);
   }
 
-  private String validatePassword(String input){
+  /**
+   * Validates the format of a password.
+   *
+   * @param input The password to validate.
+   * @return The validated password.
+   * @throws IllegalArgumentException if the password is too short or null.
+   */
+  private String validatePassword(String input) {
     if (input == null || input.length() < 4) {
       throw new IllegalArgumentException("Password must be at least 4 characters long");
     }
@@ -169,12 +230,12 @@ public class Author {
   }
 
   /**
-   * Overridden printing of author info
-   * @return
+   * Returns a string representation of the author.
+   *
+   * @return A string containing the author's ID and display name.
    */
   @Override
-  public String toString(){
-    return "Author - Unique ID = " + id + ", Public facing name: "+displayName;
+  public String toString() {
+    return "Author - Unique ID = " + id + ", Public facing name: " + displayName;
   }
-
 }
