@@ -1,6 +1,7 @@
 package no.ntnu.dagbok.entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +45,7 @@ public class DiaryEntryRegisterFindBetweenTest {
     List<DiaryEntry> result = reg.findBetween(from, to);
     assertEquals(2, result.size());
 
-    assertTrue(!result.get(0).getDateTime().isAfter(result.get(1).getDateTime()));
+    assertFalse(result.get(0).getDateTime().isAfter(result.get(1).getDateTime()));
 
     assertThrows(UnsupportedOperationException.class, () -> result.add(result.getFirst()));
   }
