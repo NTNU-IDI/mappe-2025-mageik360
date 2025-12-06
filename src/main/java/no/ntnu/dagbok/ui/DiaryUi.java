@@ -76,7 +76,7 @@ public class DiaryUi {
 
     Author lars = authors.addAuthor("Lars", "password");
     Author lisa = authors.addAuthor("Lisa", "password");
-    Author admin = authors.addAuthor("admin", "admin123");
+    authors.addAuthor("admin", "admin123");
     DiaryEntry larsEntry1 = new DiaryEntry(lars, "Title 1", "Text 1 Lars", LocalDateTime.now());
     DiaryEntry lisaEntry1 =
         new DiaryEntry(
@@ -422,16 +422,17 @@ public class DiaryUi {
    */
   private void showGlobalStatsTable() {
     System.out.println("--- Global Statistics - Admin Only ---");
-    System.out.printf("%-20s | %s%n", "Author", "Entries");
-    System.out.println("---------------------|---------");
+    System.out.printf("%-20s | %s%n", "Author","Member Since" ,"Entries");
+    System.out.println("---------------------|--------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
     for (Author a : allAuthors) {
       long count = register.countByAuthor(a.getId());
       totalEntries += count;
-      System.out.printf("%-20s | %d%n", a.getDisplayName(), count);
+      String dateCreated = a.getCreatedAt().toLocalDate().toString();
+      System.out.printf("%-20s | %d%n", a.getDisplayName(),dateCreated, count);
     }
-    System.out.println("---------------------|---------");
+    System.out.println("---------------------|--------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
     System.out.println("\nPress enter to go back to main menu");
     scanner.nextLine();
