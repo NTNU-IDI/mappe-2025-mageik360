@@ -434,7 +434,7 @@ public class DiaryUi {
     System.out.println("--- Global Statistics - Admin Only ---");
 
     System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() +"\n");
-    System.out.printf("%-20s | %-15 | %s%n", "Author","Member Since" ,"Entries");
+    System.out.printf("%-20s | %-15s | %s%n", "Author","Member Since" ,"Entries");
     System.out.println("---------------------|--------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
@@ -442,7 +442,7 @@ public class DiaryUi {
       long count = register.countByAuthor(a.getId());
       totalEntries += count;
       String dateCreated = a.getCreatedAt().toLocalDate().toString();
-      System.out.printf("%-20s | %-15 | %d%n", a.getDisplayName(),dateCreated, count);
+      System.out.printf("%-20s | %-15s | %d%n", a.getDisplayName(),dateCreated, count);
     }
     System.out.println("---------------------|--------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
