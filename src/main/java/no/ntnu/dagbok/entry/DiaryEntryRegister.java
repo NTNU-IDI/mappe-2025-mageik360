@@ -32,31 +32,11 @@ public class DiaryEntryRegister {
    */
   public void addEntry(DiaryEntry entry) {
     Objects.requireNonNull(entry, "entry must not be null");
-    Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
+    //Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
 
     entries.add(entry);
   }
 
-  /**
-   * Retrieves a specific entry based on exact date/time and author ID.
-   *
-   * <p><i>Optional implementation with help from AI.</i>
-   *
-   * @param dateTime The exact timestamp of the entry.
-   * @param authorId The UUID of the author who wrote the entry.
-   * @return An Optional containing the entry if found, or empty if not.
-   * @throws NullPointerException if dateTime or authorId or dateTime is null.
-   */
-  public Optional<DiaryEntry> getEntry(LocalDateTime dateTime, UUID authorId) {
-    Objects.requireNonNull(dateTime, "dateTime must not be null");
-    Objects.requireNonNull(authorId, "authorId must not be null");
-    for (DiaryEntry e : entries) {
-      if (dateTime.equals(e.getDateTime()) && authorId.equals(e.getAuthor().getId())) {
-        return Optional.of(e);
-      }
-    }
-    return Optional.empty();
-  }
 
   /**
    * Finds all diary entries for a specific calendar date.
@@ -122,17 +102,6 @@ public class DiaryEntryRegister {
     return entries.removeIf(e -> e.getEntryId().equals(entryId));
   }
 
-  /**
-   * Removes a specific diary entry object from the register.
-   *
-   * @param entry The DiaryEntry object to remove.
-   * @return {@code true} if the entry was found and removed, {@code false} otherwise.
-   * @throws NullPointerException if entry is null.
-   */
-  public boolean removeEntry(DiaryEntry entry) {
-    Objects.requireNonNull(entry, "entry must not be null");
-    return removeEntry(entry.getEntryId());
-  }
 
   /**
    * Retrieves all diary entries in the register.

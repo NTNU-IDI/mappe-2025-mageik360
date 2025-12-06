@@ -18,7 +18,7 @@ public class Author {
 
   private final UUID id;
   private final LocalDateTime createdAt;
-  private String password;
+  private final String password;
 
   private String displayName;
   private LocalDateTime updatedAt;

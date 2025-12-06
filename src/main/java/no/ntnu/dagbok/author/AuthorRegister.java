@@ -141,7 +141,7 @@ public class AuthorRegister {
    */
   private boolean nameExists(String normalizedKey, UUID excludeId) {
     for (Author author : idMap.values()) {
-      if (excludeId != null && author.getId().equals(excludeId)) {
+      if (author.getId().equals(excludeId)) {
         continue;
       }
       if (Author.normalizedKey(author.getDisplayName()).equals(normalizedKey)) {
