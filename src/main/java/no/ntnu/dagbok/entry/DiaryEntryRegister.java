@@ -30,11 +30,11 @@ public class DiaryEntryRegister {
    */
   public void addEntry(DiaryEntry entry) {
     Objects.requireNonNull(entry, "entry must not be null");
-    //Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be null");
+    // Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be
+    // null");
 
     entries.add(entry);
   }
-
 
   /**
    * Finds all diary entries for a specific calendar date.
@@ -99,7 +99,6 @@ public class DiaryEntryRegister {
     Objects.requireNonNull(entryId, "entryId must not be null");
     return entries.removeIf(e -> e.getEntryId().equals(entryId));
   }
-
 
   /**
    * Retrieves all diary entries in the register.

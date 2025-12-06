@@ -89,6 +89,17 @@ public class DiaryEntry {
   }
 
   /**
+   * Updates the title of the diary entry.
+   *
+   * @param title The new title. Must not be null, blank, or exceed max length.
+   * @throws NullPointerException if the title is null.
+   * @throws IllegalArgumentException if title is blank or too long.
+   */
+  public void setTitle(String title) {
+    this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
+  }
+
+  /**
    * Returns the main text content of the entry.
    *
    * @return The entry text.
@@ -97,6 +108,16 @@ public class DiaryEntry {
     return text;
   }
 
+  /**
+   * Updates the text content of the diary entry.
+   *
+   * @param text The new text content. Must not be null, blank, or exceed max length.
+   * @throws NullPointerException if text is null.
+   * @throws IllegalArgumentException if text is blank or too long.
+   */
+  public void setText(String text) {
+    this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
+  }
 
   /**
    * Returns the creation timestamps of the entry.
@@ -106,6 +127,8 @@ public class DiaryEntry {
   public LocalDateTime getDateTime() {
     return dateTime;
   }
+
+  // setter methods
 
   /**
    * Returns the unique identifier for this diary entry.
@@ -130,31 +153,6 @@ public class DiaryEntry {
       return 0;
     }
     return text.trim().split("\\s+").length;
-  }
-
-  // setter methods
-
-  /**
-   * Updates the title of the diary entry.
-   *
-   * @param title The new title. Must not be null, blank, or exceed max length.
-   * @throws NullPointerException if the title is null.
-   * @throws IllegalArgumentException if title is blank or too long.
-   */
-  public void setTitle(String title) {
-    this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
-  }
-
-
-  /**
-   * Updates the text content of the diary entry.
-   *
-   * @param text The new text content. Must not be null, blank, or exceed max length.
-   * @throws NullPointerException if text is null.
-   * @throws IllegalArgumentException if text is blank or too long.
-   */
-  public void setText(String text) {
-    this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
   }
 
   /**

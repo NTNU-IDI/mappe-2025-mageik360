@@ -9,8 +9,8 @@ import java.util.UUID;
 /**
  * Represents a diary entry author in the system.
  *
- * <p>Each author is identified by a unique UUID. Public display name can be updated,
- * but must follow valid formatting. The class also implements a simple password.</p>
+ * <p>Each author is identified by a unique UUID. Public display name can be updated, but must
+ * follow valid formatting. The class also implements a simple password.
  */
 public class Author {
 
@@ -26,8 +26,7 @@ public class Author {
   /**
    * Creates a new author with the provided display name and password.
    *
-   * <p>A unique UUID is created and
-   * timestamp is set to the current time.</p>
+   * <p>A unique UUID is created and timestamp is set to the current time.
    *
    * @param displayName The publicly facing display name of the author. Must not be null or blank.
    * @param password The user's password. Must meet length requirement.
@@ -41,8 +40,7 @@ public class Author {
   /**
    * Internal constructor to create an Author with a specific id.
    *
-   * <p>Initializes creation and update
-   * timestamps for current time.</p>
+   * <p>Initializes creation and update timestamps for current time.
    *
    * @param id The unique identifier for the author. Must not be null.
    * @param displayName The display name of the author. Must not be null or blank.
@@ -62,10 +60,10 @@ public class Author {
   /**
    * Generates a normalized key for uniqueness checks.
    *
-   * <p>The normalized process trims spaces, removes certain text symbols. Ensures
-   * distinct authors in the register despite formatting changes.</p>
+   * <p>The normalized process trims spaces, removes certain text symbols. Ensures distinct authors
+   * in the register despite formatting changes.
    *
-   * <p><i>Implementation based on suggestion from ChatGPT.</i></p>
+   * <p><i>Implementation based on suggestion from ChatGPT.</i>
    *
    * @param name The name input to normalize.
    * @return A normalized string key.
@@ -92,9 +90,9 @@ public class Author {
   /**
    * Validates and normalizes the display name for storage.
    *
-   * <p>Trims leading/trailing whitespace and reduces internal spaces to one.</p>
+   * <p>Trims leading/trailing whitespace and reduces internal spaces to one.
    *
-   * <p><i>Based on suggestion from ChatGPT on how to improve input validation.</i></p>
+   * <p><i>Based on suggestion from ChatGPT on how to improve input validation.</i>
    *
    * @param name Input name for author
    * @return A validated and cleaned string for storage.
@@ -167,7 +165,7 @@ public class Author {
   /**
    * Renames the author.
    *
-   * <p>Validates and normalizes the new name before updating.</p>
+   * <p>Validates and normalizes the new name before updating.
    *
    * @param newDisplayName The new name to set.
    * @throws IllegalArgumentException if the new name is invalid.
@@ -179,7 +177,7 @@ public class Author {
   /**
    * Indicates if some other object is equal to this one.
    *
-   * <p>Equality is overwritten to be determined by unique author ID</p>
+   * <p>Equality is overwritten to be determined by unique author ID
    *
    * @param o The reference object to compare with.
    * @return {@code true} if the object is the same as the obj argument; {@code false} otherwise.
@@ -198,7 +196,7 @@ public class Author {
   /**
    * Returns a hash code value for the author.
    *
-   * <p>The hash code is based on the unique Author ID</p>
+   * <p>The hash code is based on the unique Author ID
    *
    * @return A hash code value for this object.
    */

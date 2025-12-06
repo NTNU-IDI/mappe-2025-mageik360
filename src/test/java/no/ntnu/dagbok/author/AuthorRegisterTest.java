@@ -7,12 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.swing.text.html.Option;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests author register functionality.
- */
+/** Tests author register functionality. */
 public class AuthorRegisterTest {
 
   private final String dummyPassword = "dummyPassword";
@@ -70,7 +69,9 @@ public class AuthorRegisterTest {
     Author updated = reg.rename(a.getId(), "NewName");
 
     assertEquals("NewName", updated.getDisplayName());
-    assertEquals("NewName", reg.getById(a.getId()).get().getDisplayName());
+    Optional<Author> foundAuthor = reg.getById(a.getId());
+    assertTrue(foundAuthor.isPresent(), "Author should be found in register.");
+    assertEquals("NewName", foundAuthor.get().getDisplayName());
   }
 
   /**

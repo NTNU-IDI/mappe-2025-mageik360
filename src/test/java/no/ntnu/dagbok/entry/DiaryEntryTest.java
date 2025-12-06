@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for diary entry class.
- */
+/** Tests for diary entry class. */
 class DiaryEntryTest {
 
   private final String dummyPassword = "dummyPassword";

@@ -163,10 +163,10 @@ public class AuthorRegister {
   /**
    * Removes all authors from the register except for the administrator.
    *
-   * <p>This ensures the system remains accessible after a reset.
-   * Uses {@code removeIf} to filter out non-admin users.</p>
+   * <p>This ensures the system remains accessible after a reset. Uses {@code removeIf} to filter
+   * out non-admin users.
    *
-   * <p><i>Admin-filter made with help from AI.</i></p>
+   * <p><i>Admin-filter made with help from AI.</i>
    */
   public void clearExceptAdmin() {
     idMap.values().removeIf(author -> !author.getDisplayName().equalsIgnoreCase("admin"));

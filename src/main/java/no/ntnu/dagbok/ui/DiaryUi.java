@@ -15,18 +15,20 @@ import no.ntnu.dagbok.entry.DiaryEntryRegister;
  * Represents the console-based user interface for the Diary Application.
  *
  * <p>Responsibilities:
+ *
  * <ul>
- *   <li>Handling user interaction and parsing console input.</li>
- *   <li>Ensuring robust input handling (loops until valid input is received).</li>
- *   <li>Delegating business logic to {@link DiaryEntryRegister} and {@link AuthorRegister}.</li>
- *   <li>Managing the user session (login/logout) and access control.</li>
+ *   <li>Handling user interaction and parsing console input.
+ *   <li>Ensuring robust input handling (loops until valid input is received).
+ *   <li>Delegating business logic to {@link DiaryEntryRegister} and {@link AuthorRegister}.
+ *   <li>Managing the user session (login/logout) and access control.
  * </ul>
  *
  * <p>Conventions:
+ *
  * <ul>
- *   <li>Date/Time precision visible to user is in minutes. Pattern {@code yyyy-MM-dd HH:mm}.</li>
- *   <li>Lists are displayed sorted by date/time.</li>
- *   <li>Admin users have global access, while regular users are isolated to their own data.</li>
+ *   <li>Date/Time precision visible to user is in minutes. Pattern {@code yyyy-MM-dd HH:mm}.
+ *   <li>Lists are displayed sorted by date/time.
+ *   <li>Admin users have global access, while regular users are isolated to their own data.
  * </ul>
  */
 public class DiaryUi {
@@ -70,8 +72,8 @@ public class DiaryUi {
   /**
    * Initializes the application with demo data.
    *
-   * <p>Seeds the registers with sample authors and entries for testing purposes.
-   * Also creates non-test admin user.</p>
+   * <p>Seeds the registers with sample authors and entries for testing purposes. Also creates
+   * non-test admin user.
    */
   public void init() {
 
@@ -99,8 +101,8 @@ public class DiaryUi {
   /**
    * Starts the main application loop.
    *
-   * <p>Handles the user login process and continuously processes menu selections.
-   * until the user chooses to exit. Input errors are handled without crashing the application.</p>
+   * <p>Handles the user login process and continuously processes menu selections. until the user
+   * chooses to exit. Input errors are handled without crashing the application.
    */
   public void start() {
 
@@ -140,7 +142,7 @@ public class DiaryUi {
           }
         }
         case SYSTEM_RESET -> {
-          if (isAdmin()){
+          if (isAdmin()) {
             resetSystem();
           } else {
             System.out.println("Invalid option.");
@@ -158,7 +160,7 @@ public class DiaryUi {
   /**
    * Displays the main menu options in the console.
    *
-   * <p>Adapts the menu based on the user's role (Admin options are hidden for regular users).</p>
+   * <p>Adapts the menu based on the user's role (Admin options are hidden for regular users).
    *
    * @return The integer corresponding to the user's choice.
    */
@@ -185,7 +187,7 @@ public class DiaryUi {
   /**
    * Guides the logged-in user through creating and adding a new diary entry.
    *
-   * <p>Allows the user to choose between the current system time or a custom timestamp.</p>
+   * <p>Allows the user to choose between the current system time or a custom timestamp.
    */
   private void addEntry() {
     System.out.println("Creating entry as: " + currentUser.getDisplayName());
@@ -207,8 +209,8 @@ public class DiaryUi {
   /**
    * Facilitates editing an existing diary entry.
    *
-   * <p>The user selects a date, chooses an entry from a filtered list,
-   * and can optionally update the title and/or text.</p>
+   * <p>The user selects a date, chooses an entry from a filtered list, and can optionally update
+   * the title and/or text.
    */
   private void editEntry() {
     LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
@@ -268,7 +270,7 @@ public class DiaryUi {
   /**
    * Searches for entries containing a specific keyword or phrase.
    *
-   * <p>Results are filtered based on the current user's access rights.</p>
+   * <p>Results are filtered based on the current user's access rights.
    */
   private void searchByKeyword() {
     String keyword = readLine("Search for word/phrase: ");
@@ -283,9 +285,7 @@ public class DiaryUi {
     }
   }
 
-  /**
-   * Displays statistics for the currently logged-in user.
-   */
+  /** Displays statistics for the currently logged-in user. */
   private void showStatistics() {
     System.out.println(register.getStatistics(currentUser.getId()));
     System.out.println("Press enter to go back to menu.");
@@ -295,7 +295,7 @@ public class DiaryUi {
   /**
    * Lists all diary entries created today.
    *
-   * <p>Results are filtered based on access rights.</p>
+   * <p>Results are filtered based on access rights.
    */
   private void todayEntries() {
     List<DiaryEntry> allToday = register.findByDate(LocalDate.now());
@@ -306,8 +306,8 @@ public class DiaryUi {
    * Lists diary entries available to the user.
    *
    * <ul>
-   *   <li><b>Admin: </b> Sees all entries in the system.</li>
-   *   <li><b>Regular User: </b> Sees only their own entries.</li>
+   *   <li><b>Admin: </b> Sees all entries in the system.
+   *   <li><b>Regular User: </b> Sees only their own entries.
    * </ul>
    */
   private void listAll() {
@@ -323,9 +323,7 @@ public class DiaryUi {
     list(entriesToShow);
   }
 
-  /**
-   * Lists entries for a specific author (Admin only).
-   */
+  /** Lists entries for a specific author (Admin only). */
   private void listByAuthor() {
     String authorName = readLine("Author's name: ");
     Optional<Author> a = authors.findByName(authorName);
@@ -336,9 +334,7 @@ public class DiaryUi {
     list(register.findByAuthor(a.get().getId()));
   }
 
-  /**
-   * Lists entries from a specific date.
-   */
+  /** Lists entries from a specific date. */
   private void searchByDate() {
     LocalDate date = readDate("Date (" + PATTERN_DATE + "):");
     List<DiaryEntry> allFound = register.findByDate(date);
@@ -355,7 +351,7 @@ public class DiaryUi {
    * Handles the deletion of a diary entry.
    *
    * <p>Users select an entry from a filtered list of their own entries (or all entries for admin),
-   * verify the selection, and confirm deletion.</p>
+   * verify the selection, and confirm deletion.
    */
   private void deleteEntry() {
     LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
@@ -402,9 +398,7 @@ public class DiaryUi {
     }
   }
 
-  /**
-   * Searches for and displays entries within a specific date/time range.
-   */
+  /** Searches for and displays entries within a specific date/time range. */
   private void searchBetweenDates() {
     System.out.println("--- Search by Time Range ---");
     LocalDateTime from = readDateTime("From date/time (" + PATTERN_MINUTE + "): ");
@@ -425,16 +419,16 @@ public class DiaryUi {
   }
 
   /**
-   * Displays a table of global statistics including all authors and their entry counts.
-   * Only available to Admins.
+   * Displays a table of global statistics including all authors and their entry counts. Only
+   * available to Admins.
    *
-   * <p><i>Implemented with help from AI.</i></p>
+   * <p><i>Implemented with help from AI.</i>
    */
   private void showGlobalStatsTable() {
     System.out.println("--- Global Statistics - Admin Only ---");
 
-    System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() +"\n");
-    System.out.printf("%-20s | %-15s | %s%n", "Author","Member Since" ,"Entries");
+    System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() + "\n");
+    System.out.printf("%-20s | %-15s | %s%n", "Author", "Member Since", "Entries");
     System.out.println("---------------------|--------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
@@ -442,7 +436,7 @@ public class DiaryUi {
       long count = register.countByAuthor(a.getId());
       totalEntries += count;
       String dateCreated = a.getCreatedAt().toLocalDate().toString();
-      System.out.printf("%-20s | %-15s | %d%n", a.getDisplayName(),dateCreated, count);
+      System.out.printf("%-20s | %-15s | %d%n", a.getDisplayName(), dateCreated, count);
     }
     System.out.println("---------------------|--------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
@@ -450,16 +444,15 @@ public class DiaryUi {
     scanner.nextLine();
   }
 
-  /**
-   * Deletes all andries an all non-admin authors.
-   * Only available to Admin.
-   */
-  private void resetSystem(){
-    if (!isAdmin()) {return;}
+  /** Deletes all andries an all non-admin authors. Only available to Admin. */
+  private void resetSystem() {
+    if (!isAdmin()) {
+      return;
+    }
 
     System.out.println("!!! WARNING - THIS ACTION WILL DELETE ALL AUTHORS AND ENTRIES !!!");
 
-    if (readYesNo("Are you certain you want to delete all entries and authors? (y/n): ")){
+    if (readYesNo("Are you certain you want to delete all entries and authors? (y/n): ")) {
       register.clearDiaryEntryRegister();
       authors.clearExceptAdmin();
 
@@ -471,8 +464,8 @@ public class DiaryUi {
   }
 
   /**
-   * Handles the login or registration flow at application startup.
-   * Forces the user to authenticate before accessing the main menu.
+   * Handles the login or registration flow at application startup. Forces the user to authenticate
+   * before accessing the main menu.
    */
   private void loginOrRegister() {
     while (currentUser == null) {
@@ -510,9 +503,7 @@ public class DiaryUi {
     }
   }
 
-  /**
-   * Prompts for username and password to register a new user.
-   */
+  /** Prompts for username and password to register a new user. */
   private void performRegistration() {
     String name = readLine("Choose username: ");
     if (authors.findByName(name).isPresent()) {
@@ -531,7 +522,7 @@ public class DiaryUi {
   /**
    * Helper method to iterate through and display a list of entries.
    *
-   * <p><i>Filtering logic fixed with AI</i></p>
+   * <p><i>Filtering logic fixed with AI</i>
    *
    * @param entries The list of diary entries to display.
    */
@@ -596,8 +587,7 @@ public class DiaryUi {
   }
 
   /**
-   * Reads a date from the console in the format yyyy-MM-dd
-   * Loops until valid input is received.
+   * Reads a date from the console in the format yyyy-MM-dd Loops until valid input is received.
    *
    * @param input The message to display to the user.
    * @return A valid LocalDate object.
@@ -614,10 +604,9 @@ public class DiaryUi {
     }
   }
 
-
   /**
-   * Reads a date and time from the console in the format yyyy-MM-dd HH:mm.
-   * Loops until valid input is received.
+   * Reads a date and time from the console in the format yyyy-MM-dd HH:mm. Loops until valid input
+   * is received.
    *
    * @param input The message to display to the user.
    * @return A valid LocalDateTime object.
@@ -637,7 +626,7 @@ public class DiaryUi {
   /**
    * Prompts the user for a Yes/No answer.
    *
-   * <p><i>Suggestion from ChatGPT.</i></p>
+   * <p><i>Suggestion from ChatGPT.</i>
    *
    * @param input The messag to display.
    * @return {@code true} for 'y', {@code false} for 'n'.
@@ -659,7 +648,7 @@ public class DiaryUi {
   /**
    * Checks if the currently logged-in user has administrative privileges.
    *
-   * <p><i>Admin-role designed with help from Google Gemini.</i></p>
+   * <p><i>Admin-role designed with help from Google Gemini.</i>
    *
    * @return {@code true} if user is named "admin", {@code false} otherwise.
    */
@@ -671,11 +660,11 @@ public class DiaryUi {
    * Filters a list of entries based on the logged-in user's profile.
    *
    * <ul>
-   *   <li><b>Admin:</b>Has full access (returns all entries).</li>
-   *   <li><b>Regular User:</b>Has access only to their own entries.</li>
+   *   <li><b>Admin:</b>Has full access (returns all entries).
+   *   <li><b>Regular User:</b>Has access only to their own entries.
    * </ul>
    *
-   * <p><i>Admin-role and streaming made with help from Google Gemini.</i></p>
+   * <p><i>Admin-role and streaming made with help from Google Gemini.</i>
    *
    * @param entries The list of diary entries to check.
    * @return A filtered list of diary entries viewable by the current user.

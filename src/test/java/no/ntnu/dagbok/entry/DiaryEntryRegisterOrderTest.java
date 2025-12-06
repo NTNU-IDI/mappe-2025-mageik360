@@ -9,9 +9,7 @@ import java.util.List;
 import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for diary entry register ordering functionality.
- */
+/** Tests for diary entry register ordering functionality. */
 public class DiaryEntryRegisterOrderTest {
 
   /**
