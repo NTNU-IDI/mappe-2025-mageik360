@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /** Tests author register functionality. */
-public class AuthorRegisterTest {
+class AuthorRegisterTest {
 
   private final String dummyPassword = "dummyPassword";
   private AuthorRegister reg;
