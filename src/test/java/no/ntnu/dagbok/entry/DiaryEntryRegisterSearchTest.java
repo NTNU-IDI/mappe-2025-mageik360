@@ -15,7 +15,7 @@ public class DiaryEntryRegisterSearchTest {
   private Author author;
 
   @BeforeEach
-  void setUp(){
+  void setUp() {
     register = new DiaryEntryRegister();
     author = new Author("TestAuthor", "password");
   }
@@ -23,14 +23,13 @@ public class DiaryEntryRegisterSearchTest {
   /**
    * Tests that searchKeyword finds matches both in the title and the text.
    *
-   * <p>
-   * assertEquals for correct number of returned entries.
-   * </p>
+   * <p>assertEquals for correct number of returned entries.
    */
   @Test
-  void searchByKeyword_finds_matches_in_title_and_text(){
+  void searchByKeyword_finds_matches_in_title_and_text() {
     register.addEntry(new DiaryEntry(author, "My Day", "Did nothing", LocalDateTime.now()));
-    register.addEntry(new DiaryEntry(author,"Work","Meeting about planning", LocalDateTime.now()));
+    register.addEntry(
+        new DiaryEntry(author, "Work", "Meeting about planning", LocalDateTime.now()));
 
     List<DiaryEntry> res1 = register.searchByKeyword("Day");
     assertEquals(1, res1.size());
@@ -42,27 +41,23 @@ public class DiaryEntryRegisterSearchTest {
   /**
    * Tests that searchByKeyword is case-insensitive
    *
-   * <p>
-   * assertEquals for correct number of returned entries.
-   * </p>
+   * <p>assertEquals for correct number of returned entries.
    */
   @Test
-  void searchByKeyword_is_case_insensitive(){
+  void searchByKeyword_is_case_insensitive() {
     register.addEntry(new DiaryEntry(author, "Title", "TEXT", LocalDateTime.now()));
 
     List<DiaryEntry> res = register.searchByKeyword("text");
-    assertEquals(1,res.size());
+    assertEquals(1, res.size());
   }
 
   /**
    * Tests that searchByKeyword returns an empty list when there are no matches.
    *
-   * <p>
-   * assertTrue for empty list, not null.
-   * </p>
+   * <p>assertTrue for empty list, not null.
    */
   @Test
-  void searchByKeyword_returns_empty_list_for_no_match(){
+  void searchByKeyword_returns_empty_list_for_no_match() {
     register.addEntry(new DiaryEntry(author, "Title", "Text", LocalDateTime.now()));
 
     List<DiaryEntry> res = register.searchByKeyword("Fake");
@@ -72,19 +67,16 @@ public class DiaryEntryRegisterSearchTest {
   /**
    * Tests that removeEntry deletes correct entry based on UUID.
    *
-   * <p>
-   * assertTrue for returning true boolean.
-   * assertEquals for number of entries and title.
-   * </p>
+   * <p>assertTrue for returning true boolean. assertEquals for number of entries and title.
    */
   @Test
-  void removeEntry_deletes_correct_entry_by_uuid(){
+  void removeEntry_deletes_correct_entry_by_uuid() {
     DiaryEntry e1 = new DiaryEntry(author, "Title1", "Text1", LocalDateTime.now());
     DiaryEntry e2 = new DiaryEntry(author, "Title2", "Text2", LocalDateTime.now());
     register.addEntry(e1);
     register.addEntry(e2);
 
-    boolean removed = register.removeEntry(e1.getEntryID());
+    boolean removed = register.removeEntry(e1.getEntryId());
 
     assertTrue(removed);
     assertEquals(1, register.getNumberOfEntries());
@@ -95,12 +87,10 @@ public class DiaryEntryRegisterSearchTest {
   /**
    * Tests that getStatistics calculates the correct values.
    *
-   * <p>
-   * assertTrue for strings containing the correct values.
-   * </p>
+   * <p>assertTrue for strings containing the correct values.
    */
   @Test
-  void getStatistics_calculates_correct_totals(){
+  void getStatistics_calculates_correct_totals() {
     register.addEntry(new DiaryEntry(author, "Title1", "word1 word2", LocalDateTime.now()));
     register.addEntry(new DiaryEntry(author, "Title2", "word3 word4 word5", LocalDateTime.now()));
 
@@ -109,5 +99,4 @@ public class DiaryEntryRegisterSearchTest {
     assertTrue(stats.contains("Total entries: 2"));
     assertTrue(stats.contains("Total word count: 5"));
   }
-
 }
