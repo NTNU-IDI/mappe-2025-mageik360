@@ -9,6 +9,9 @@ import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests for diary entry register search functionality.
+ */
 public class DiaryEntryRegisterSearchTest {
 
   private DiaryEntryRegister register;

@@ -1,12 +1,15 @@
 package no.ntnu.dagbok.entry;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDateTime;
 import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+/**
+ * Tests for diary entry class.
+ */
 class DiaryEntryTest {
 
   private final String dummyPassword = "dummyPassword";

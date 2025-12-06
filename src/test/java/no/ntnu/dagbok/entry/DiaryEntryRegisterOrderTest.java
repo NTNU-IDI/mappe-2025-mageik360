@@ -1,11 +1,17 @@
 package no.ntnu.dagbok.entry;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import no.ntnu.dagbok.author.Author;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for diary entry register ordering functionality.
+ */
 public class DiaryEntryRegisterOrderTest {
 
   /**

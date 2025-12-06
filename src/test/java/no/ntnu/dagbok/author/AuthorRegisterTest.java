@@ -10,6 +10,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests author register functionality.
+ */
 public class AuthorRegisterTest {
 
   private final String dummyPassword = "dummyPassword";
@@ -80,7 +83,7 @@ public class AuthorRegisterTest {
   void rename_throws_if_name_is_taken() {
 
     Author a1 = reg.addAuthor("Lars", "pass");
-    Author a2 = reg.addAuthor("Lisa", "pass");
+    reg.addAuthor("Lisa", "pass");
 
     assertThrows(RuntimeException.class, () -> reg.rename(a1.getId(), "Lisa"));
     assertThrows(RuntimeException.class, () -> reg.rename(a1.getId(), "LISA"));
