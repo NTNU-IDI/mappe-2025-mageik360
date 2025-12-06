@@ -1,18 +1,32 @@
 package no.ntnu.dagbok.author;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
+/**
+ * Manages a collection of Author objects.
+ *
+ * <p>Stores, retrieves, updates and removes authors. Authors are stored in a Map for fast retrieval
+ * by ID.
+ */
 public class AuthorRegister {
 
   private final Map<UUID, Author> idMap = new HashMap<>();
 
   /**
-   * Creates a new Author and adds it to the register
+   * Creates a new Author and adds it to the register.
    *
-   * @param displayName name of author to be added
-   * @throws RuntimeException when a name already exists
-   * @throws RuntimeException for invalid author names
-   * @return author
+   * @param displayName The public facing name of the author. Must not be null.
+   * @param password The password for the author.
+   * @return The newly created and added author.
+   * @throws NullPointerException if displayName is null.
    */
   public Author addAuthor(String displayName, String password) {
     Objects.requireNonNull(displayName, "displayName must not be null");
@@ -22,10 +36,13 @@ public class AuthorRegister {
   }
 
   /**
-   * Getter author in register
+   * Retrieves an author by unique ID.
    *
-   * @param id UUID of author
-   * @return Author
+   * <p><i>Optional implemented with help from ChatGPT.</i>
+   *
+   * @param id The UUID of the author to retrieve. Must not be null.
+   * @return An Optional containing the Author if found, or empty if not.
+   * @throws NullPointerException if the id is null.
    */
   public Optional<Author> getById(UUID id) {
     Objects.requireNonNull(id, "id must not be null");
@@ -33,9 +50,14 @@ public class AuthorRegister {
   }
 
   /**
-   * Getter for all authors Comparator provided by ChatGPT
+   * Retrieves a list of all registered authors.
    *
-   * @return List of all authors
+   * <p>The list is sorted alphabetically by normalized display name, then by ID. The returned list
+   * is unmodifiable.
+   *
+   * <p><i>Comparator implementation provided by ChatGPT</i>
+   *
+   * @return A sorted, unmodifiable list of all authors.
    */
   public List<Author> getAll() {
     List<Author> list = new ArrayList<>(idMap.values());
@@ -46,10 +68,15 @@ public class AuthorRegister {
   }
 
   /**
-   * Finds author by name Optional return value suggested by ChatGPT
+   * Searches for an author by display name.
    *
-   * @param displayName name of author to be found
-   * @return Author to be found
+   * <p>The search uses a normalized key to ensure case-insensitive matching.
+   *
+   * <p><i>Optional return value suggested by ChatGPT.</i>
+   *
+   * @param displayName The name of the author to search for. Must not be null.
+   * @return An optional containing the Author if found, empty if not.
+   * @throws NullPointerException if displayName is null.
    */
   public Optional<Author> findByName(String displayName) {
     Objects.requireNonNull(displayName, "displayName must not be null");
@@ -64,11 +91,16 @@ public class AuthorRegister {
   }
 
   /**
-   * Rename a previously existing author with unique name
+   * Rename an existing author, ensuring the new name is unique.
    *
-   * @param id
-   * @param newDisplayName
-   * @return
+   * <p><i>Exceptions implemented with help from AI.</i>
+   *
+   * @param id The UUID of the author to rename. Must not be null.
+   * @param newDisplayName The new display name to set. Must not be null.
+   * @return The updated Author object.
+   * @throws RuntimeException if the ID is not found in the register.
+   * @throws RuntimeException if an author with the new name already exists.
+   * @throws NullPointerException if the id or newDisplayName is null.
    */
   public Author rename(UUID id, String newDisplayName) {
     Objects.requireNonNull(id, "id must not be null");
@@ -87,10 +119,11 @@ public class AuthorRegister {
   }
 
   /**
-   * Removes an author from the register by id.
+   * Removes an author from the register by ID.
    *
-   * @param id UUID of author
-   * @return true if successfully removed, false if not found
+   * @param id The UUID of the author to remove. Must not be null.
+   * @return {@code true} if the author was successfully removed, {@code false} if not found.
+   * @throws NullPointerException if the id is null.
    */
   public boolean remove(UUID id) {
     Objects.requireNonNull(id, "id must not be null");
@@ -98,15 +131,19 @@ public class AuthorRegister {
   }
 
   /**
-   * Helper method which checks for names in register
+   * Checks if a display name already exists in the register.
    *
-   * @param normalizedKey
-   * @param excludeId
-   * @return
+   * <p><i>Optional ID implementation suggested by ChatGPT.</i>
+   *
+   * @param normalizedKey The normalized key to check.
+   * @param excludeId An optional ID to exclude from the check (used during rename).
+   * @return {@code true} if the name exists on another author, {@code false} otherwise.
    */
   private boolean nameExists(String normalizedKey, UUID excludeId) {
     for (Author author : idMap.values()) {
-      if (excludeId != null && author.getId().equals(excludeId)) {continue;}
+      if (excludeId != null && author.getId().equals(excludeId)) {
+        continue;
+      }
       if (Author.normalizedKey(author.getDisplayName()).equals(normalizedKey)) {
         return true;
       }
@@ -114,12 +151,16 @@ public class AuthorRegister {
     return false;
   }
 
-  /** Number of authors in the register */
+  /**
+   * Returns the total number of authors in the register.
+   *
+   * @return The count of registered authors.
+   */
   public int getAuthorNumber() {
     return idMap.size();
   }
 
-  /** Completely clears registry of authors */
+  /** Removes all authors from the register. */
   public void clear() {
     idMap.clear();
   }

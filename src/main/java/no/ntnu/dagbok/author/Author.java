@@ -7,8 +7,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Object representing a diary entry author. Identity is kept unique id Display name can be updated,
- * but must have valid formatting
+ * Represents a diary entry author in the system.
+ *
+ * <p>Each author is identified by a unique UUID. Public display name can be updated,
+ * but must follow valid formatting. The class also implements a simple password.</p>
  */
 public class Author {
 
@@ -22,8 +24,10 @@ public class Author {
   private LocalDateTime updatedAt;
 
   /**
-   * Creates a new author with the provided display name and password. A unique UUID is created and
-   * timestamp is set to the current time.
+   * Creates a new author with the provided display name and password.
+   *
+   * <p>A unique UUID is created and
+   * timestamp is set to the current time.</p>
    *
    * @param displayName The publicly facing display name of the author. Must not be null or blank.
    * @param password The user's password. Must meet length requirement.
@@ -35,8 +39,10 @@ public class Author {
   }
 
   /**
-   * Internal constructor to create an Author with a specific id. Initializes creation and update
-   * timestamps for current time.
+   * Internal constructor to create an Author with a specific id.
+   *
+   * <p>Initializes creation and update
+   * timestamps for current time.</p>
    *
    * @param id The unique identifier for the author. Must not be null.
    * @param displayName The display name of the author. Must not be null or blank.
@@ -54,11 +60,17 @@ public class Author {
   }
 
   /**
-   * Normalized key used for uniqueness checks Trims and collapsed whitespace, then transforms to
-   * lowercase Based on suggestion from ChatGPT on how to keep distinct authors in register
+   * Generates a normalized key for uniqueness checks.
    *
-   * @param name Name
-   * @return Kay
+   * <p>The normalized process trims spaces, removes certain text symbols. Ensures
+   * distinct authors in the register despite formatting changes.</p>
+   *
+   * <p><i>Implementation based on suggestion from ChatGPT.</i></p>
+   *
+   * @param name The name input to normalize.
+   * @return A normalized string key.
+   * @throws IllegalArgumentException if the name is blank or exceeds maximum length.
+   * @throws NullPointerException if the name is null.
    */
   public static String normalizedKey(String name) {
     String trimmed = Objects.requireNonNull(name, "displayName must not be null").trim();
@@ -78,12 +90,16 @@ public class Author {
   }
 
   /**
-   * Validates and returns processed value for displayName Trims and collapses spaces
+   * Validates and normalizes the display name for storage.
    *
-   * <p>Based on suggestion from ChatGPT on how to improve input validation
+   * <p>Trims leading/trailing whitespace and reduces internal spaces to one.</p>
+   *
+   * <p><i>Based on suggestion from ChatGPT on how to improve input validation.</i></p>
    *
    * @param name Input name for author
-   * @return
+   * @return A validated and cleaned string for storage.
+   * @throws IllegalArgumentException if the name is blank or exceeds maximum length.
+   * @throws NullPointerException if the name is null.
    */
   private static String validateAndNormalizeForStorage(String name) {
     String trimmed = Objects.requireNonNull(name, "displayName must not be null").trim();
@@ -101,9 +117,9 @@ public class Author {
   // setters
 
   /**
-   * Setter for authors actual name
+   * Updates the author's display name and refreshes the update timestamp.
    *
-   * @param updatedDisplayName updated name of author
+   * @param updatedDisplayName The new, validated author name.
    */
   void setDisplayNameInternal(String updatedDisplayName) {
     this.displayName = updatedDisplayName;
@@ -113,51 +129,60 @@ public class Author {
   // getters
 
   /**
-   * Getter for actual author name
+   * Returns the display name of the author.
    *
-   * @return name of author
+   * @return The author's name.
    */
   public String getDisplayName() {
     return displayName;
   }
 
   /**
-   * Getter for unique author ID
+   * Returns the unique identifier of the author.
    *
-   * @return unique ID of author
+   * @return The author's UUID.
    */
   public UUID getId() {
     return id;
   }
 
   /**
-   * Getter for author creation date and time
+   * Returns the date and time when the author was created.
    *
-   * @return author creation LocalDateTime
+   * @return The creation timestamp.
    */
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
   /**
-   * Getter for author update date and time
+   * Returns the date and time when the author was last updated.
    *
-   * @return author update LocalDateTime
+   * @return The last author update timestamp.
    */
   public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
+  /**
+   * Renames the author.
+   *
+   * <p>Validates and normalizes the new name before updating.</p>
+   *
+   * @param newDisplayName The new name to set.
+   * @throws IllegalArgumentException if the new name is invalid.
+   */
   void rename(String newDisplayName) {
     setDisplayNameInternal(validateAndNormalizeForStorage(newDisplayName));
   }
 
   /**
-   * Overridden boolean comparison for authors based on a unique ID Based normalized key suggestion
-   * from ChatGPT
+   * Indicates if some other object is equal to this one.
    *
-   * @param o author object to be compared with other author
-   * @return true/false value based on author ID
+   * <p>Equality is overwritten to be determined by unique author ID</p>
+   *
+   * @param o The reference object to compare with.
+   * @return {@code true} if the object is the same as the obj argument; {@code false} otherwise.
    */
   @Override
   public boolean equals(Object o) {
@@ -171,9 +196,11 @@ public class Author {
   }
 
   /**
-   * Overridden hashing based on author ID
+   * Returns a hash code value for the author.
    *
-   * @return hash of author ID
+   * <p>The hash code is based on the unique Author ID</p>
+   *
+   * @return A hash code value for this object.
    */
   @Override
   public int hashCode() {
@@ -181,15 +208,22 @@ public class Author {
   }
 
   /**
-   * Checks in the provided password is correct.
+   * Checks in the provided password matches the author's password.
    *
-   * @param input password to be checked.
-   * @return true if password matches, false otherwise.
+   * @param input The password string to verify.
+   * @return {@code true} if the password matches, {@code false} otherwise.
    */
   public boolean checkPassword(String input) {
     return this.password.equals(input);
   }
 
+  /**
+   * Validates the format of a password.
+   *
+   * @param input The password to validate.
+   * @return The validated password.
+   * @throws IllegalArgumentException if the password is too short or null.
+   */
   private String validatePassword(String input) {
     if (input == null || input.length() < 4) {
       throw new IllegalArgumentException("Password must be at least 4 characters long");
@@ -198,9 +232,9 @@ public class Author {
   }
 
   /**
-   * Overridden printing of author info
+   * Returns a string representation of the author.
    *
-   * @return
+   * @return A string containing the author's ID and display name.
    */
   @Override
   public String toString() {
