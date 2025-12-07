@@ -80,22 +80,34 @@ public class DiaryUi {
     Author lars = authors.addAuthor("Lars", "password");
     Author lisa = authors.addAuthor("Lisa", "password");
     authors.addAuthor("admin", "admin123");
-    DiaryEntry larsEntry1 = new DiaryEntry(lars, "Title 1", "Text 1 Lars", LocalDateTime.now());
+    DiaryEntry larsEntry1 =
+        new DiaryEntry(
+            lars,
+            "Skoletur",
+            "I dag var det skoletur til sentrum. Vi fikk se oss rundt. Jeg så en hund.",
+            LocalDateTime.now());
     DiaryEntry lisaEntry1 =
         new DiaryEntry(
             lisa,
-            "Title 2",
-            "Text 2 Lisa",
+            "Møte på arbeid",
+            "I dag hadde jeg et veldig kjedelig møte på arbeid. Det var bare bortkastet tid.",
             LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
     DiaryEntry larsEntry2 =
         new DiaryEntry(
             lars,
-            "Title 3",
-            "Text 3 Lars",
+            "Fridag",
+            "I dag hadde jeg fri fra skolen. Jeg satt hjemme og spilte Fortnite.",
             LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
+    DiaryEntry lisaEntry2 =
+        new DiaryEntry(
+            lisa,
+            "Arbeidstur",
+            "I dag var det arbeidstur til sentrum. Vi fikk se oss rundt. Jeg så en hund.",
+            LocalDateTime.now());
     register.addEntry(larsEntry1);
     register.addEntry(lisaEntry1);
     register.addEntry(larsEntry2);
+    register.addEntry(lisaEntry2);
   }
 
   /**
@@ -214,7 +226,7 @@ public class DiaryUi {
    * the title and/or text.
    */
   private void editEntry() {
-    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
+    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ") ");
     List<DiaryEntry> foundEntries = register.findByDate(date);
     List<DiaryEntry> viewableEntries = applyAccessControl(foundEntries);
 
