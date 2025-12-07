@@ -284,13 +284,13 @@ public class DiaryUi {
       System.out.println("Found " + visibleResults.size() + " matches in diary entries: ");
       list(visibleResults);
     }
+    waitForEnter();
   }
 
   /** Displays statistics for the currently logged-in user. */
   private void showStatistics() {
     System.out.println(register.getStatistics(currentUser.getId()));
-    System.out.println("Press enter to go back to menu.");
-    scanner.nextLine();
+    waitForEnter();
   }
 
   /**
@@ -301,6 +301,7 @@ public class DiaryUi {
   private void todayEntries() {
     List<DiaryEntry> allToday = register.findByDate(LocalDate.now());
     list(applyAccessControl(allToday));
+    waitForEnter();
   }
 
   /**
@@ -322,6 +323,7 @@ public class DiaryUi {
       entriesToShow = register.findByAuthor(currentUser.getId());
     }
     list(entriesToShow);
+    waitForEnter();
   }
 
   /** Lists entries for a specific author (Admin only). */
@@ -333,6 +335,7 @@ public class DiaryUi {
       return;
     }
     list(register.findByAuthor(a.get().getId()));
+    waitForEnter();
   }
 
   /** Lists entries from a specific date. */
@@ -346,6 +349,7 @@ public class DiaryUi {
     } else {
       list(viewable);
     }
+    waitForEnter();
   }
 
   /**
@@ -417,6 +421,7 @@ public class DiaryUi {
     } catch (IllegalArgumentException e) {
       System.out.println("Error: " + e.getMessage());
     }
+    waitForEnter();
   }
 
   /**
@@ -430,7 +435,7 @@ public class DiaryUi {
 
     System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() + "\n");
     System.out.printf("%-20s | %-15s | %s%n", "Author", "Member Since", "Entries");
-    System.out.println("---------------------|--------------|---------");
+    System.out.println("---------------------|-----------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
     for (Author a : allAuthors) {
@@ -439,7 +444,7 @@ public class DiaryUi {
       String dateCreated = a.getCreatedAt().toLocalDate().toString();
       System.out.printf("%-20s | %-15s | %d%n", a.getDisplayName(), dateCreated, count);
     }
-    System.out.println("---------------------|--------------|---------");
+    System.out.println("---------------------|-----------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
     System.out.println("\nPress enter to go back to main menu");
     scanner.nextLine();
@@ -598,9 +603,9 @@ public class DiaryUi {
       System.out.print(input);
       String s = scanner.nextLine().trim();
       try {
-        return LocalDate.parse(s, DF_MINUTE);
+        return LocalDate.parse(s, DF_DATE);
       } catch (Exception e) {
-        System.out.println("Invalid date format. Use " + PATTERN_MINUTE);
+        System.out.println("Invalid date format. Use " + PATTERN_DATE);
       }
     }
   }
@@ -680,5 +685,14 @@ public class DiaryUi {
     }
 
     return entries.stream().filter(e -> e.getAuthor().equals(currentUser)).toList();
+  }
+
+  /**
+   * Pauses until uses presses enter. Helps user read output written to screen before main menu
+   * comes back.
+   */
+  private void waitForEnter() {
+    System.out.println("\nPress enter to go back to main menu: ");
+    scanner.nextLine();
   }
 }
