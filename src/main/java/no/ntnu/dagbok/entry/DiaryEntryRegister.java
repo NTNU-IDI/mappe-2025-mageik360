@@ -207,7 +207,7 @@ public class DiaryEntryRegister {
     List<DiaryEntry> userEntries = findByAuthor(authorId);
 
     if (userEntries.isEmpty()) {
-      return "No statistics availale - Author has no entries.";
+      return "No statistics available - Author has no entries.";
     }
 
     long totalEntries = userEntries.size();
