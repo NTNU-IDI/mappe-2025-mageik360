@@ -100,4 +100,44 @@ public class DiaryEntryRegisterSearchTest {
     assertTrue(stats.contains("Total entries: 2"));
     assertTrue(stats.contains("Total word count: 5"));
   }
+
+  /** Tests that countByAuthor returns the correct number of diary entries. */
+  @Test
+  void countByAuthor_returns_correct_number() {
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    Author a1 = new Author("Lars", "pass");
+    Author a2 = new Author("Lisa", "pass");
+
+    reg.addEntry(new DiaryEntry(a1, "T1", "text", LocalDateTime.now()));
+    reg.addEntry(new DiaryEntry(a1, "T2", "text", LocalDateTime.now()));
+    reg.addEntry(new DiaryEntry(a2, "T3", "text", LocalDateTime.now()));
+
+    Author a3 = new Author("Bob", "pass");
+    assertEquals(2, reg.countByAuthor(a1.getId()));
+    assertEquals(1, reg.countByAuthor(a2.getId()));
+    assertEquals(0, reg.countByAuthor(a3.getId()));
+  }
+
+  /** Test to check that clerDiaryEntryRegister removes all diary entries from register. */
+  @Test
+  void clearDiaryEntryRegister_removes_all_entries() {
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    Author a = new Author("Lars", "pass");
+    reg.addEntry(new DiaryEntry(a, "T1", "text", LocalDateTime.now()));
+
+    assertEquals(1, reg.getNumberOfEntries());
+
+    reg.clearDiaryEntryRegister();
+
+    assertEquals(0, reg.getNumberOfEntries());
+    assertTrue(reg.getAll().isEmpty());
+  }
+
+  @Test
+  void getStatistics_handles_author_with_no_entries() {
+    DiaryEntryRegister reg = new DiaryEntryRegister();
+    Author a = new Author("Empty", "pass");
+    String stats = reg.getStatistics(a.getId());
+    assertTrue(stats.contains("No statistics available"));
+  }
 }
