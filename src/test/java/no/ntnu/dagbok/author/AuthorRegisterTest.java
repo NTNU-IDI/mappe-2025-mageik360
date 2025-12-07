@@ -117,6 +117,7 @@ class AuthorRegisterTest {
     assertTrue(reg.getById(a.getId()).isEmpty(), "Author should be removed from register");
   }
 
+  /** Tests that clearExceptAdmin removes every author except admin user. */
   @Test
   void clearExceptAdmin_removes_everyone_but_admin() {
     reg.addAuthor("admin", "pass");
@@ -128,5 +129,14 @@ class AuthorRegisterTest {
     assertEquals(1, reg.getAuthorNumber());
     assertTrue(reg.findByName("admin").isPresent());
     assertTrue(reg.findByName("Lars").isEmpty());
+  }
+
+  /** Tests that getAuthorNumber returns the correct number of authors in register. */
+  @Test
+  void getAuthorNumber_returns_correct_count() {
+    assertEquals(0, reg.getAuthorNumber());
+    reg.addAuthor("A1", "pass");
+    reg.addAuthor("A2", "pass");
+    assertEquals(2, reg.getAuthorNumber());
   }
 }
