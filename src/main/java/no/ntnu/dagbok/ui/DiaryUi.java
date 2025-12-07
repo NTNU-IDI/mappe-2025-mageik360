@@ -80,22 +80,34 @@ public class DiaryUi {
     Author lars = authors.addAuthor("Lars", "password");
     Author lisa = authors.addAuthor("Lisa", "password");
     authors.addAuthor("admin", "admin123");
-    DiaryEntry larsEntry1 = new DiaryEntry(lars, "Title 1", "Text 1 Lars", LocalDateTime.now());
+    DiaryEntry larsEntry1 =
+        new DiaryEntry(
+            lars,
+            "Skoletur",
+            "I dag var det skoletur til sentrum. Vi fikk se oss rundt. Jeg så en hund.",
+            LocalDateTime.now());
     DiaryEntry lisaEntry1 =
         new DiaryEntry(
             lisa,
-            "Title 2",
-            "Text 2 Lisa",
+            "Møte på arbeid",
+            "I dag hadde jeg et veldig kjedelig møte på arbeid. Det var bare bortkastet tid.",
             LocalDateTime.now().minusDays(3).withHour(12).withMinute(20));
     DiaryEntry larsEntry2 =
         new DiaryEntry(
             lars,
-            "Title 3",
-            "Text 3 Lars",
+            "Fridag",
+            "I dag hadde jeg fri fra skolen. Jeg satt hjemme og spilte Fortnite.",
             LocalDateTime.now().minusDays(4).withHour(15).withMinute(22));
+    DiaryEntry lisaEntry2 =
+        new DiaryEntry(
+            lisa,
+            "Arbeidstur",
+            "I dag var det arbeidstur til sentrum. Vi fikk se oss rundt. Jeg så en hund.",
+            LocalDateTime.now());
     register.addEntry(larsEntry1);
     register.addEntry(lisaEntry1);
     register.addEntry(larsEntry2);
+    register.addEntry(lisaEntry2);
   }
 
   /**
@@ -214,7 +226,7 @@ public class DiaryUi {
    * the title and/or text.
    */
   private void editEntry() {
-    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
+    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ") ");
     List<DiaryEntry> foundEntries = register.findByDate(date);
     List<DiaryEntry> viewableEntries = applyAccessControl(foundEntries);
 
@@ -284,13 +296,13 @@ public class DiaryUi {
       System.out.println("Found " + visibleResults.size() + " matches in diary entries: ");
       list(visibleResults);
     }
+    waitForEnter();
   }
 
   /** Displays statistics for the currently logged-in user. */
   private void showStatistics() {
     System.out.println(register.getStatistics(currentUser.getId()));
-    System.out.println("Press enter to go back to menu.");
-    scanner.nextLine();
+    waitForEnter();
   }
 
   /**
@@ -301,6 +313,7 @@ public class DiaryUi {
   private void todayEntries() {
     List<DiaryEntry> allToday = register.findByDate(LocalDate.now());
     list(applyAccessControl(allToday));
+    waitForEnter();
   }
 
   /**
@@ -322,6 +335,7 @@ public class DiaryUi {
       entriesToShow = register.findByAuthor(currentUser.getId());
     }
     list(entriesToShow);
+    waitForEnter();
   }
 
   /** Lists entries for a specific author (Admin only). */
@@ -333,6 +347,7 @@ public class DiaryUi {
       return;
     }
     list(register.findByAuthor(a.get().getId()));
+    waitForEnter();
   }
 
   /** Lists entries from a specific date. */
@@ -346,6 +361,7 @@ public class DiaryUi {
     } else {
       list(viewable);
     }
+    waitForEnter();
   }
 
   /**
@@ -417,6 +433,7 @@ public class DiaryUi {
     } catch (IllegalArgumentException e) {
       System.out.println("Error: " + e.getMessage());
     }
+    waitForEnter();
   }
 
   /**
@@ -430,7 +447,7 @@ public class DiaryUi {
 
     System.out.println("\nTotal number of registered authors:" + authors.getAuthorNumber() + "\n");
     System.out.printf("%-20s | %-15s | %s%n", "Author", "Member Since", "Entries");
-    System.out.println("---------------------|--------------|---------");
+    System.out.println("---------------------|-----------------|---------");
     List<Author> allAuthors = authors.getAll();
     long totalEntries = 0;
     for (Author a : allAuthors) {
@@ -439,7 +456,7 @@ public class DiaryUi {
       String dateCreated = a.getCreatedAt().toLocalDate().toString();
       System.out.printf("%-20s | %-15s | %d%n", a.getDisplayName(), dateCreated, count);
     }
-    System.out.println("---------------------|--------------|---------");
+    System.out.println("---------------------|-----------------|---------");
     System.out.println("Total entries in system: " + totalEntries);
     System.out.println("\nPress enter to go back to main menu");
     scanner.nextLine();
@@ -472,14 +489,17 @@ public class DiaryUi {
     while (currentUser == null) {
       System.out.println("1. Login");
       System.out.println("2. New User");
+      System.out.println("0. Exit program");
       int choice = readInt("Choose option: ");
 
-      if (choice == 1) {
-        performLogin();
-      } else if (choice == 2) {
-        performRegistration();
-      } else {
-        System.out.println("Invalid choice.");
+      switch (choice) {
+        case 1 -> performLogin();
+        case 2 -> performRegistration();
+        case 0 -> {
+          System.out.println("Exiting program");
+          System.exit(0);
+        }
+        default -> System.out.println("Invalid choice.");
       }
     }
   }
@@ -489,30 +509,35 @@ public class DiaryUi {
     String name = readLine("Username: ");
     Optional<Author> authorOpt = authors.findByName(name);
 
-    if (authorOpt.isEmpty()) {
-      System.out.println("User not found.");
-      return;
-    }
+    try {
+      if (authorOpt.isEmpty()) {
+        System.out.println("User not found.");
+        return;
+      }
 
-    Author author = authorOpt.get();
-    String password = readLine("Password: ");
+      Author author = authorOpt.get();
+      String password = readLine("Password: ");
 
-    if (author.checkPassword(password)) {
-      this.currentUser = author;
-    } else {
-      System.out.println("Incorrect password.");
+      if (author.checkPassword(password)) {
+        this.currentUser = author;
+      } else {
+        System.out.println("Incorrect password.");
+      }
+    } catch (IllegalArgumentException e) {
+      System.out.println("Invalid user name format: " + e.getMessage());
     }
   }
 
   /** Prompts for username and password to register a new user. */
   private void performRegistration() {
     String name = readLine("Choose username: ");
-    if (authors.findByName(name).isPresent()) {
-      System.out.println("User already exists");
-      return;
-    }
-    String password = readLine("Choose password: ");
     try {
+      if (authors.findByName(name).isPresent()) {
+        System.out.println("User already exists");
+        return;
+      }
+      String password = readLine("Choose password: ");
+
       this.currentUser = authors.addAuthor(name, password);
       System.out.println("User successfully created.");
     } catch (IllegalArgumentException e) {
@@ -600,7 +625,7 @@ public class DiaryUi {
       try {
         return LocalDate.parse(s, DF_DATE);
       } catch (Exception e) {
-        System.out.println("Invalid date format. Use " + DF_DATE);
+        System.out.println("Invalid date format. Use " + PATTERN_DATE);
       }
     }
   }
@@ -619,7 +644,7 @@ public class DiaryUi {
       try {
         return LocalDateTime.parse(s, DF_MINUTE);
       } catch (Exception e) {
-        System.out.println("Invalid format. Use " + DF_MINUTE);
+        System.out.println("Invalid format. Use " + PATTERN_MINUTE);
       }
     }
   }
@@ -680,5 +705,14 @@ public class DiaryUi {
     }
 
     return entries.stream().filter(e -> e.getAuthor().equals(currentUser)).toList();
+  }
+
+  /**
+   * Pauses until uses presses enter. Helps user read output written to screen before main menu
+   * comes back.
+   */
+  private void waitForEnter() {
+    System.out.println("\nPress enter to go back to main menu: ");
+    scanner.nextLine();
   }
 }
