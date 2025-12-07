@@ -1,7 +1,9 @@
 package no.ntnu.dagbok.entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import no.ntnu.dagbok.author.Author;
@@ -137,5 +139,39 @@ class DiaryEntryTest {
 
     assertThrows(IllegalArgumentException.class, () -> e.setTitle(tooLongTitle));
     assertThrows(IllegalArgumentException.class, () -> e.setText(tooLongText));
+  }
+
+  /** Tests that toString produces a string with expected content. */
+  @Test
+  void testToString() {
+    Author a = new Author("Author", "pass");
+    DiaryEntry e = new DiaryEntry(a, "Title", "Text", LocalDateTime.now());
+
+    String output = e.toString();
+    assertTrue(output.contains("Author"));
+    assertTrue(output.contains("Title"));
+    assertTrue(output.contains("Text"));
+  }
+
+  /** Checks that getEntryId does not return null. */
+  @Test
+  void getEntryId_returns_uuid() {
+    Author a = new Author("Author", "pass");
+    DiaryEntry e = new DiaryEntry(a, "Title", "Text", LocalDateTime.now());
+    assertNotNull(e.getEntryId());
+  }
+
+  /** Tests that all getters return the expected values. */
+  @Test
+  void verify_all_getters() {
+    Author a = new Author("Test", "pass");
+    LocalDateTime time = LocalDateTime.now();
+    DiaryEntry e = new DiaryEntry(a, "Title", "Text", time);
+
+    assertEquals(a, e.getAuthor());
+    assertEquals("Title", e.getTitle());
+    assertEquals("Text", e.getText());
+    assertEquals(time, e.getDateTime());
+    assertNotNull(e.getEntryId());
   }
 }
