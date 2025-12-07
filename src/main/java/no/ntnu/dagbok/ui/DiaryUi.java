@@ -598,9 +598,9 @@ public class DiaryUi {
       System.out.print(input);
       String s = scanner.nextLine().trim();
       try {
-        return LocalDate.parse(s, DF_DATE);
+        return LocalDate.parse(s, DF_MINUTE);
       } catch (Exception e) {
-        System.out.println("Invalid date format. Use " + DF_DATE);
+        System.out.println("Invalid date format. Use " + PATTERN_MINUTE);
       }
     }
   }
@@ -619,7 +619,7 @@ public class DiaryUi {
       try {
         return LocalDateTime.parse(s, DF_MINUTE);
       } catch (Exception e) {
-        System.out.println("Invalid format. Use " + DF_MINUTE);
+        System.out.println("Invalid format. Use " + PATTERN_MINUTE);
       }
     }
   }
