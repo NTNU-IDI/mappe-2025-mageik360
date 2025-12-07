@@ -30,7 +30,7 @@ public class Main {
    *
    * <p><i>Dependency injection based on suggestion from Google Gemini.</i>
    *
-   * @param args Unused commmand-line arguments.
+   * @param args Unused command-line arguments.
    */
   public static void main(String[] args) {
     DiaryEntryRegister entryRegister = new DiaryEntryRegister();

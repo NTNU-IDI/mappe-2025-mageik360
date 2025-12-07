@@ -371,7 +371,7 @@ public class DiaryUi {
    * verify the selection, and confirm deletion.
    */
   private void deleteEntry() {
-    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + ")");
+    LocalDate date = readDate("What is the date of the entry? (" + PATTERN_DATE + "): ");
     List<DiaryEntry> allEntriesFound = register.findByDate(date);
     List<DiaryEntry> viewableEntries = applyAccessControl(allEntriesFound);
 
