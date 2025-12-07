@@ -489,14 +489,17 @@ public class DiaryUi {
     while (currentUser == null) {
       System.out.println("1. Login");
       System.out.println("2. New User");
+      System.out.println("0. Exit program");
       int choice = readInt("Choose option: ");
 
-      if (choice == 1) {
-        performLogin();
-      } else if (choice == 2) {
-        performRegistration();
-      } else {
-        System.out.println("Invalid choice.");
+      switch (choice) {
+        case 1 -> performLogin();
+        case 2 -> performRegistration();
+        case 0 -> {
+          System.out.println("Exiting program");
+          System.exit(0);
+        }
+        default -> System.out.println("Invalid choice.");
       }
     }
   }
@@ -506,30 +509,35 @@ public class DiaryUi {
     String name = readLine("Username: ");
     Optional<Author> authorOpt = authors.findByName(name);
 
-    if (authorOpt.isEmpty()) {
-      System.out.println("User not found.");
-      return;
-    }
+    try {
+      if (authorOpt.isEmpty()) {
+        System.out.println("User not found.");
+        return;
+      }
 
-    Author author = authorOpt.get();
-    String password = readLine("Password: ");
+      Author author = authorOpt.get();
+      String password = readLine("Password: ");
 
-    if (author.checkPassword(password)) {
-      this.currentUser = author;
-    } else {
-      System.out.println("Incorrect password.");
+      if (author.checkPassword(password)) {
+        this.currentUser = author;
+      } else {
+        System.out.println("Incorrect password.");
+      }
+    } catch (IllegalArgumentException e) {
+      System.out.println("Invalid user name format: " + e.getMessage());
     }
   }
 
   /** Prompts for username and password to register a new user. */
   private void performRegistration() {
     String name = readLine("Choose username: ");
-    if (authors.findByName(name).isPresent()) {
-      System.out.println("User already exists");
-      return;
-    }
-    String password = readLine("Choose password: ");
     try {
+      if (authors.findByName(name).isPresent()) {
+        System.out.println("User already exists");
+        return;
+      }
+      String password = readLine("Choose password: ");
+
       this.currentUser = authors.addAuthor(name, password);
       System.out.println("User successfully created.");
     } catch (IllegalArgumentException e) {
