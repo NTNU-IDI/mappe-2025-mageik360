@@ -179,6 +179,7 @@ public class DiaryUi {
     if (isAdmin()) {
       System.out.println("10. List entries by author (Admin)");
       System.out.println("11. View global statistics (Admin)");
+      System.out.println("12. System Reset (Admin)");
     }
     System.out.println("0. Exit program");
     return readInt("Pick option ");
