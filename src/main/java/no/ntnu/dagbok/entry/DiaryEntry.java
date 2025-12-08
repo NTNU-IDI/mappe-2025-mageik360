@@ -75,8 +75,6 @@ public class DiaryEntry {
     return trimmed;
   }
 
-  // getter methods
-
   /**
    * Returns the author of this entry.
    *
@@ -134,8 +132,6 @@ public class DiaryEntry {
   public LocalDateTime getDateTime() {
     return dateTime;
   }
-
-  // setter methods
 
   /**
    * Returns the unique identifier for this diary entry.
