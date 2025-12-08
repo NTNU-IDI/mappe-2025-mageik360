@@ -132,8 +132,8 @@ public class Author {
    *
    * @param updatedDisplayName The new, validated author name.
    */
-  void setDisplayNameInternal(String updatedDisplayName) {
-    this.displayName = updatedDisplayName;
+  private void setDisplayNameInternal(String updatedDisplayName) {
+    this.displayName = validateAndNormalizeForStorage(updatedDisplayName);
     this.updatedAt = LocalDateTime.now();
   }
 
@@ -184,7 +184,7 @@ public class Author {
    * @throws IllegalArgumentException if the new name is invalid.
    */
   void rename(String newDisplayName) {
-    setDisplayNameInternal(validateAndNormalizeForStorage(newDisplayName));
+    setDisplayNameInternal(newDisplayName);
   }
 
   /**
