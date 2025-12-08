@@ -39,8 +39,8 @@ public class DiaryEntry {
   public DiaryEntry(Author author, String title, String text, LocalDateTime dateTime) {
     this.entryId = UUID.randomUUID();
     this.author = Objects.requireNonNull(author, "author cannot be null");
-    this.title = validateEmptyInput(title, "title", TITLE_MAX_LENGTH);
-    this.text = validateEmptyInput(text, "text", TEXT_MAX_LENGTH);
+    setTitle(title);
+    setText(text);
     this.dateTime = Objects.requireNonNull(dateTime, "dateTime cannot be null");
   }
 
