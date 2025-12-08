@@ -40,6 +40,14 @@ public class AuthorRegister {
    *
    * <p><i>Optional implemented with help from ChatGPT.</i>
    *
+   * <p>Why: To provide a safe way to look up an author from id. Returns an {@code Optional} to
+   * force handling of non-existent authors. This reduces the risk of a {@code
+   * NullPointerException}.
+   *
+   * <p>How: The method performs a direct lookup of the {@code HashMap} using the UUID. Result is
+   * wrapped in {@code Optional.ofNullable()}. This ensures that an empty optional is returned if
+   * the UUID is not found.
+   *
    * @param id The UUID of the author to retrieve. Must not be null.
    * @return An Optional containing the Author if found, or empty if not.
    * @throws NullPointerException if the id is null.
@@ -57,6 +65,13 @@ public class AuthorRegister {
    *
    * <p><i>Comparator implementation provided by ChatGPT</i>
    *
+   * <p>Why: Provides a safe way for the UI to display all authors. A copy wrapped in an {@code
+   * unmodifiableList} ensures that external classes cannot tamper with the register state.
+   *
+   * <p>How: Creates a new {@code ArrayList} containing values from the {@code idMap}. Sorts the
+   * list using a chain of Comparators: First sorted by alphabetical display-name. Secondarily
+   * sorted by ID. Returns the list wrapped in {@code Collections.unmodifiableList}.
+   *
    * @return A sorted, unmodifiable list of all authors.
    */
   public List<Author> getAll() {
@@ -73,6 +88,12 @@ public class AuthorRegister {
    * <p>The search uses a normalized key to ensure case-insensitive matching.
    *
    * <p><i>Optional return value suggested by ChatGPT.</i>
+   *
+   * <p>Why: Allows looking up a user based on human-readable input instead of UUID.
+   *
+   * <p>How: The Map is keyed by UUID, so search by name requires linear lookup. Finds {@code
+   * normalizedKey} from input string. Iterates through authors in the map. Compares the normalized
+   * name of each author with key. Returns the first match, wrapped in {@code Optional}.
    *
    * @param displayName The name of the author to search for. Must not be null.
    * @return An optional containing the Author if found, empty if not.
@@ -94,6 +115,13 @@ public class AuthorRegister {
    * Rename an existing author, ensuring the new name is unique.
    *
    * <p><i>Exceptions implemented with help from AI.</i>
+   *
+   * <p>Why: Allows user to change their display name while maintaining the integrity of the sytem.
+   * Enforces that two user cannot have the same display name.
+   *
+   * <p>How: Ensures parameters are not null. Verifies that the author ID exists. Uses {@code
+   * baneExists} to check if the new name is already taken. If checks pass, calls {@code
+   * author.rename()} to update object.
    *
    * @param id The UUID of the author to rename. Must not be null.
    * @param newDisplayName The new display name to set. Must not be null.

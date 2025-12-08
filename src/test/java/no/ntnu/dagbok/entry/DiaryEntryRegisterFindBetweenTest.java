@@ -18,7 +18,7 @@ public class DiaryEntryRegisterFindBetweenTest {
    * Tests to check that returned entries from register are sorted and unmodifiable
    *
    * <p>assertTrue for correct order. assertThrows for adding entry to returned result. Made with
-   * help from chatGPT.
+   * help from chatGPT to generate data.
    */
   @Test
   void returns_entries_in_half_open_interval_sorted_and_unmodifiable() {

@@ -65,6 +65,12 @@ public class Author {
    *
    * <p><i>Implementation based on suggestion from ChatGPT.</i>
    *
+   * <p>Why: The goal is to ensure that differences in formatting, accents, cases do not cause
+   * duplicate authors. This normalization allows "Lars" and "lars" to be the same user.
+   *
+   * <p><i>How:</i> It checks that the name is not null or blank to prevent invalid data. It trims
+   * whitespaces and collapses internal spaces. It removes accents using {@code Normalizer}.
+   *
    * @param name The name input to normalize.
    * @return A normalized string key.
    * @throws IllegalArgumentException if the name is blank or exceeds maximum length.
@@ -93,6 +99,13 @@ public class Author {
    * <p>Trims leading/trailing whitespace and reduces internal spaces to one.
    *
    * <p><i>Based on suggestion from ChatGPT on how to improve input validation.</i>
+   *
+   * <p>Why: To ensure that names stored in the system are clean and readable. Prevents messy data
+   * from being stored.
+   *
+   * <p>How: Throws an exception if the input is null. Trims whitespace from the beginning and end
+   * of the string. Ensures the name is not empty or whitespace only. Uses the regex {@code \\s+} to
+   * identify sequences with one or more whitespaces. Replaces these with a single whitespace.
    *
    * @param name Input name for author
    * @return A validated and cleaned string for storage.

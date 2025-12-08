@@ -13,6 +13,16 @@ import no.ntnu.dagbok.ui.DiaryUi;
  *
  * <p>This design promotes low coupling by ensuring the UI does not create its own dependencies
  * internally.
+ *
+ * <p>Why:</p>
+ * Decouples the User Interface from the creation of its dependencies.
+ * Strictly separates the creation from business logic. Helps achieves low coupling.
+ *
+ * <p>How:</p>
+ * Instantiates the storage classes.
+ * Injects instances to {@link DiaryUi} constructor.
+ * Initiates the application sate with test data.
+ * Transfers control to the UI by calling {@code start()}
  */
 public class Main {
 
@@ -29,6 +39,15 @@ public class Main {
    * </ol>
    *
    * <p><i>Dependency injection based on suggestion from Google Gemini.</i>
+   *
+   * <p>Why:</p>
+   * Bootstraps the application, creates a valid state before user interaction begins.
+   *
+   * <p>How:</p>
+   * Creates and empty {@code DiaryEntryRegister}.
+   * Creates an empty {@code AuthorRegister}.
+   * Creates {@code diaryUi.init()} to populate the register with demo data.
+   * Calls {@code diaryUi.start()} to enter the main event loop.
    *
    * @param args Unused command-line arguments.
    */

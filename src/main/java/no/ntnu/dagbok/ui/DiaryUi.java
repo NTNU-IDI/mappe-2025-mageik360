@@ -41,7 +41,7 @@ public class DiaryUi {
   private static final int SEARCH_BY_KEYWORD = 7;
   private static final int SEARCH_BETWEEN = 8;
   private static final int STATISTICS = 9;
-  private static final int EDIT_NAME =10;
+  private static final int EDIT_NAME = 10;
   private static final int LIST_BY_AUTHOR = 11;
   private static final int GLOBAL_STATISTICS = 12;
   private static final int SYSTEM_RESET = 13;
@@ -719,8 +719,8 @@ public class DiaryUi {
     scanner.nextLine();
   }
 
-  private void editAuthorName(){
-    if (isAdmin()){
+  private void editAuthorName() {
+    if (isAdmin()) {
       System.out.println("Admin cannot change display name");
       waitForEnter();
       return;
@@ -731,7 +731,7 @@ public class DiaryUi {
 
     try {
       authors.rename(currentUser.getId(), newName);
-    } catch (RuntimeException e){
+    } catch (RuntimeException e) {
       System.out.println("Error: " + e.getMessage());
     }
     waitForEnter();

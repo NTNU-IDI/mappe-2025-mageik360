@@ -9,9 +9,8 @@ import no.ntnu.dagbok.author.Author;
 /**
  * Represents a single entry in the diary.
  *
- * <p>Each entry consists of an author, a timestamp, a title, and text content.
- * The ID, Author and Timestamp are immutable after creation, while
- * the Title and Text can be updated.</p>
+ * <p>Each entry consists of an author, a timestamp, a title, and text content. The ID, Author and
+ * Timestamp are immutable after creation, while the Title and Text can be updated.
  */
 public class DiaryEntry {
 
@@ -20,6 +19,7 @@ public class DiaryEntry {
 
   /** Maximum allowed characters for the entry text. */
   public static final int TEXT_MAX_LENGTH = 10_000;
+
   private final Author author;
   private final LocalDateTime dateTime;
   private final UUID entryId;
@@ -47,7 +47,14 @@ public class DiaryEntry {
   /**
    * Validates string input to ensure it is not null, empty, or too long.
    *
-   * <p><i>Reusable validator method suggested by ChatGPT-</i></p>
+   * <p><i>Reusable validator method suggested by ChatGPT-</i>
+   *
+   * <p>Why: Centralizes validation logic for all text fields in the class. Ensures the consistency
+   * and avoids repetition. Ensures that {@code DiaryEntry} can exist in an invalid state.
+   *
+   * <p>How: Throws exception if input is null. Trims leading and trailing whitespace. Verifies that
+   * the trimmed string is not empty. Checks if the string exceeds the specified length. Returns the
+   * trimmed string if validation succeeds.
    *
    * @param value The string value to check.
    * @param field The name of the field (used for error messages).
@@ -142,9 +149,9 @@ public class DiaryEntry {
   /**
    * Calculates the total number of words in the entry's text.
    *
-   * <p>Words are determined by splitting the text by whitespace.</p>
+   * <p>Words are determined by splitting the text by whitespace.
    *
-   * <p><i>Trimming made with help from AI.</i></p>
+   * <p><i>Trimming made with help from AI.</i>
    *
    * @return The total word count. Returns 0 if text is empty.
    */

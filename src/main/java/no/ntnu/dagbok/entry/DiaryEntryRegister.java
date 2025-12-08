@@ -30,8 +30,6 @@ public class DiaryEntryRegister {
    */
   public void addEntry(DiaryEntry entry) {
     Objects.requireNonNull(entry, "entry must not be null");
-    // Author author = Objects.requireNonNull(entry.getAuthor(), "author of entry must not be
-    // null");
 
     entries.add(entry);
   }
@@ -40,6 +38,21 @@ public class DiaryEntryRegister {
    * Finds all diary entries for a specific calendar date.
    *
    * <p><i>Submapping logic provided by ChatGPT.</i>
+   *
+   * <p>Why:</p>
+   * Allows the user to see what happened on a specific day.
+   * Entries are stored with {@code LocalDateTime}.
+   * A direct equality check fails unless time matches exactly.
+   *
+   * <p>How:</p>
+   * Ensures the search date is not null.
+   * Iterates through all entries and converts each entry's timestamp
+   * to {@code LocalDate} using {@code toLocalDate()}. This is compared to
+   * target date.
+   * Sorting is done matching entries chronologically using the register's
+   * defined {@code ORDER}.
+   * Returns the list wrapped in {@code Collections.unmodifiableList()}
+   * to prevent external modification.
    *
    * @param date The date to search for.
    * @return An unmodifiable, sorted list of entries matching the date.
@@ -63,6 +76,18 @@ public class DiaryEntryRegister {
    * <p>The range is half-open: [fromInclusive, toExclusive).
    *
    * <p><i>Implementation assistance from ChatGPT.</i>
+   *
+   * <p>Why:</p>
+   * Allows the user to retrieve entries from a specific period.
+   * Search uses a half-open interval which avoids overlapping results.
+   *
+   * <p>How:</p>
+   * Ensures both timestamps are non-null and that start time is strictly
+   * before end time.Throws exception for invalid range.
+   * Filters by iterating all entries and selects those equal to or after {@code fromInclusive}
+   * and strictly before {@code toExclusive}. Sorts the list chronologically using
+   * {@code ORDER} comparator to ensure correct order.
+   * Wraps the result in {@code Collections.unmodifiableList()} to ensure data integrity.
    *
    * @param fromInclusive The start time of the search (inclusive).
    * @param toExclusive The end time of the search (exclusive).
@@ -116,6 +141,18 @@ public class DiaryEntryRegister {
    *
    * <p><i>Collections implemented with help from ChatGPT.</i>
    *
+   * <p>Why:</p>
+   * Supports data isolation and user privacy.
+   * Allows the retrieval of entries of user.
+   *
+   * <p>How:</p>
+   * Checks that the id is not null.
+   * Performs linear search through the main registry.
+   * Checks the unique UUID of the author associated with each entry.
+   * Matches added to temporary list.
+   * List sorted chronologically.
+   * Returns an {@code unmodifiableList} to ensure that the receiver cannot alter the restult.
+   *
    * @param authorId The UUID of the author.
    * @return An unmodifiable, sorted list of the author's entries.
    * @throws NullPointerException if authorId is null.
@@ -140,6 +177,18 @@ public class DiaryEntryRegister {
    *
    * <p><i>Stream implementation suggested by ChatGPT.</i>
    *
+   * <p>Why:</p>
+   * Allows the user to search by keyword.
+   *
+   * <p>How:</p>
+   * Uses Stream pipeline to process data.
+   * Validation ensures keyword is not null.
+   * Trims whitespaces and converts to lower case to ensure case-insensitive search.
+   * Exits if search term is empty. Returns an empty list.
+   * {@code filter}: Keeps only entries that match the keyword.
+   * {@code sorted}: Organizes results chronologically using the register's defined {@code ORDER}.
+   * {@code toList}: Collects results into unmodifiable list.
+   *
    * @param keyword The keyword to be searched for.
    * @return An unmodifiable list of matching diary entries. Returns an empty list if keyword is
    *     blank.
@@ -160,6 +209,16 @@ public class DiaryEntryRegister {
    * Determines if a single entry matches the search criteria.
    *
    * <p><i>Use of streams in search suggested by ChatGPT.</i>
+   *
+   * <p>Why:</p>
+   * Encapsulates the matching logic in separate helper methods. Improves code readability.
+   * Defines "matching" in centralized fashion.
+   *
+   * <p>How:</p>
+   * Performs case-insensitive check:
+   * Converts title's entry to lowercase and check if it contains the search term.
+   * Converts the entry's text body to lower case and checks if it contains the search term.
+   * Returns {@code true} if either field contains the keyword.
    *
    * @param entry The entry being checked.
    * @param search The term being searched for. Trimmed and in lower case.
@@ -195,7 +254,19 @@ public class DiaryEntryRegister {
    * <p>Includes total entries, total word count, average word count, and identifies the longest and
    * shortest entries.
    *
-   * <p><i>Stream formatting provided by AI.</i>
+   * <p><i>Stream formatting and streams implemented with help from Google Gemini.</i>
+   *
+   * <p>Why:</p>
+   * Provides the user with important information about their diary usage. Implemented
+   * in using effective string builder and streams-based tools.
+   *
+   * <p>How:</p>
+   * Uses streams instead of manual loops to aggregate data.
+   * {@code mapToInt().sum()}: Calculates the total word count in a single pass.
+   * {@code max()} and {@code min()}: Find outliers using a {@code Comparator} based on word count.
+   * StringBuilder is used in place of String concatenation.
+   * Strings are immutable, so concatenation creates a number of temporary objects.
+   * {@code StringBuilder} modifies a single buffer, which is more efficient.
    *
    * @param authorId The UUID of the author to generate statistics for.
    * @return A formatted string containing the user statistics.
