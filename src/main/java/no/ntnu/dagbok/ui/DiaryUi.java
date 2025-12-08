@@ -41,9 +41,10 @@ public class DiaryUi {
   private static final int SEARCH_BY_KEYWORD = 7;
   private static final int SEARCH_BETWEEN = 8;
   private static final int STATISTICS = 9;
-  private static final int LIST_BY_AUTHOR = 10;
-  private static final int GLOBAL_STATISTICS = 11;
-  private static final int SYSTEM_RESET = 12;
+  private static final int EDIT_NAME =10;
+  private static final int LIST_BY_AUTHOR = 11;
+  private static final int GLOBAL_STATISTICS = 12;
+  private static final int SYSTEM_RESET = 13;
   private static final int EXIT_PROGRAM = 0;
   // Formatting suggestion from ChatGPT
   private static final String PATTERN_MINUTE = "yyyy-MM-dd HH:mm";
@@ -139,6 +140,7 @@ public class DiaryUi {
         case SEARCH_BY_KEYWORD -> searchByKeyword();
         case SEARCH_BETWEEN -> searchBetweenDates();
         case STATISTICS -> showStatistics();
+        case EDIT_NAME -> editAuthorName();
         case LIST_BY_AUTHOR -> {
           if (isAdmin()) {
             listByAuthor();
@@ -188,10 +190,11 @@ public class DiaryUi {
     System.out.println("7. Search by keyword/phrase");
     System.out.println("8. View by date range");
     System.out.println("9. View diary statistics");
+    System.out.println("10. Edit author name (non-admin)");
     if (isAdmin()) {
-      System.out.println("10. List entries by author (Admin)");
-      System.out.println("11. View global statistics (Admin)");
-      System.out.println("12. System Reset (Admin)");
+      System.out.println("11. List entries by author (Admin)");
+      System.out.println("12. View global statistics (Admin)");
+      System.out.println("13. System Reset (Admin)");
     }
     System.out.println("0. Exit program");
     return readInt("Pick option ");
@@ -714,5 +717,23 @@ public class DiaryUi {
   private void waitForEnter() {
     System.out.println("\nPress enter to go back to main menu: ");
     scanner.nextLine();
+  }
+
+  private void editAuthorName(){
+    if (isAdmin()){
+      System.out.println("Admin cannot change display name");
+      waitForEnter();
+      return;
+    }
+    System.out.println("*** Edit Author Name ***");
+    System.out.println("Current display name: " + currentUser.getDisplayName());
+    String newName = readLine("\nEnter new display name: ");
+
+    try {
+      authors.rename(currentUser.getId(), newName);
+    } catch (RuntimeException e){
+      System.out.println("Error: " + e.getMessage());
+    }
+    waitForEnter();
   }
 }
